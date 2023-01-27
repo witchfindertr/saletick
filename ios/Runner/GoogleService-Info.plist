@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>581158486898-4f8200sjd4v56s8jma3q88e4lhe25o1f.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.581158486898-4f8200sjd4v56s8jma3q88e4lhe25o1f</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCZWJ0yDsChm4fo04NNRludvKXlA4COIww</string>
+	<key>GCM_SENDER_ID</key>
+	<string>581158486898</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.saletick</string>
+	<key>PROJECT_ID</key>
+	<string>saletick-1db9a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>saletick-1db9a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:581158486898:ios:e62d9891792a45afb953eb</string>
+</dict>
+</plist>

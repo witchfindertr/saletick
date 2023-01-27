@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "581158486898",
+    "project_id": "saletick-1db9a",
+    "storage_bucket": "saletick-1db9a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581158486898:android:64bd26c71846eb8db953eb",
+        "android_client_info": {
+          "package_name": "com.example.saletick"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581158486898-2khj11rrejpsbfiisfdjvvsp3pc8mufi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6phbsIP_s3j2tmvjbGTZd8BRaHeJ3NxM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581158486898-2khj11rrejpsbfiisfdjvvsp3pc8mufi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
