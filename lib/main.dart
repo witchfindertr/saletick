@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:saletick/app_constants/routes.dart';
 import 'package:saletick/bindings/custom_bindings.dart';
 import 'package:saletick/firebase_options.dart';
+import 'package:saletick/screens/auth_screens/reset_passeord_screen.dart';
+import 'package:saletick/screens/dashboard/add_new_staff_screen.dart';
+import 'package:saletick/screens/products/add_new_product.dart';
 
 
 

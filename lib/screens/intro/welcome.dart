@@ -25,14 +25,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(        
-        title: Text(
-          'Tarnor App',
-          style: headline4,
-        ),
-        centerTitle: true,
-        // leading:const Icon(Icons.menu),
-      ),
       body: Container(
         padding: EdgeInsets.only(top:10),
         margin: EdgeInsets.zero,

@@ -46,7 +46,7 @@ class _StaffListScreenState extends State<StaffListScreen> {
              // checking if current user is being fetched,  if true, show circularProgressIndicator
             // if fetched, we check if user is a staff or not.
             // if user is a staff, we restrict the view and show text. But if it is an admin, we will show the list of staff
-            child: controller.currentUserData.isStaff? Center(
+            child: !(controller.currentUserData.isAdmin)? Center(
               child: Container( 
                 margin: EdgeInsets.only(top: Dimensions.screenHeight*0.5),           
                 child: Text(
@@ -83,7 +83,7 @@ class _StaffListScreenState extends State<StaffListScreen> {
                             onTap: (){
                               Get.to(StaffDetailScreen(staff: staff));
                             },
-                            child: StaffRowWidget(text: staff.firstName), // staff name
+                            child: StaffRowWidget(text: "${staff.firstName} (${staff.position})"), // staff name
                           );
                         })
                       ),
@@ -95,11 +95,12 @@ class _StaffListScreenState extends State<StaffListScreen> {
           );
         }
       ),
-      floatingActionButton: controller.currentUserData.isStaff? null : FloatingActionButton(
+      // floatingActionButton: !(controller.currentUserData.isAdmin)? null : FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         elevation: 3,
         child: const Icon(Icons.add),
         onPressed: (){ 
-          Get.to(AddNewStaffScreen());
+          Get.to(() => const AddNewStaffScreen());
         },
       ),
     );

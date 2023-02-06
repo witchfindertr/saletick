@@ -73,7 +73,7 @@ class _AdminScreenState extends State<AdminScreen> {
       // if not null, check if user has made any sell, 
       body: Obx(() {
           return authController.isLoading.value? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
-            child: authController.currentUserData.isStaff? Center(
+            child: !(authController.currentUserData.isAdmin)? Center(
               child: Container( 
                 margin: EdgeInsets.only(top: Dimensions.screenHeight*0.5),           
                 child: Text(
@@ -338,7 +338,7 @@ class _AdminScreenState extends State<AdminScreen> {
           );
         }
       ),
-      floatingActionButton: authController.currentUserData.isStaff? null : FloatingActionButton.extended(
+      floatingActionButton: !(authController.currentUserData.isAdmin)? null : FloatingActionButton.extended(
         elevation: 3,
         label: Text(
           'See Total Icome',

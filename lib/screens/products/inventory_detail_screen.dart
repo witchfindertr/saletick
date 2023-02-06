@@ -201,18 +201,18 @@ class InventoryDetailScreen extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if(!authController.currentUserData.isStaff)
-                Column(
-                  children: [
-                    MainButton(
-                      onPressed: (){
-                        Get.to(ReStockProductScreen(product: productModel));
-                      }, 
-                      text: 'ReStock'
-                    ),
-                    SizedBox(height: Dimensions.size20),
-                  ],
-                ),                
+                if(authController.currentUserData.isAdmin)
+                  Column(
+                    children: [
+                      MainButton(
+                        onPressed: (){
+                          Get.to(ReStockProductScreen(product: productModel));
+                        }, 
+                        text: 'ReStock'
+                      ),
+                      SizedBox(height: Dimensions.size20),
+                    ],
+                  ),                
                 MainButton(
                   onPressed: (){
                     Get.to(SellAProductScreen(product: productModel));

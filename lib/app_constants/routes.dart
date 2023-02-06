@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:saletick/screens/auth_screens/employerlogin.dart';
 import 'package:saletick/screens/auth_screens/login.dart';
 import 'package:saletick/screens/auth_screens/register_screen.dart';
 import 'package:saletick/screens/home/tarnor_home.dart';
@@ -29,13 +28,7 @@ class Routes {
       page: () => const TanorHomeScreen(),
       transition: Transition.fadeIn,      
     ),
-    // employer login screen
-    GetPage(
-      name: EmployerLoginScreen.routeName,
-      page: () => const EmployerLoginScreen(),  
-      transition: Transition.fade,    
-    ),
-    // employee login screen
+    // login screen
     GetPage(
       name: LoginScreen.routeName,
       page: () => const LoginScreen(),

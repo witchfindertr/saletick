@@ -76,9 +76,7 @@ class InputFieldPlusTextWidget extends StatelessWidget {
               ),                    
               fillColor: AppColors.inputFillColor,
               filled: true,                          
-              enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder!.copyWith(
-                borderSide: const BorderSide(width: 0.0, color: Colors.white)
-              ),
+              enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
               errorStyle: Theme.of(context).inputDecorationTheme.errorStyle,                            
               errorBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
               focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder, 

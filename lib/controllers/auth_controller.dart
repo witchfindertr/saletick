@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:saletick/models/sales_model.dart';
@@ -95,22 +95,21 @@ class AuthController extends GetxController {
   Future<void> signUpUser(String email, String password, String fName, String lName) async{
     // creating empty strings when user first signs Up
     String phone = '';
-    String position = '';
+    String position = 'ADMIN/CEO';
     String imageUrl = '';
+    bool isUserAnAdmin = true;
+
     try{
       // start Loading
       UserFeedBack.showLoading();
       await auth.createUserWithEmailAndPassword(email: email, password: password);
       await Future.delayed(const Duration(seconds: 1));
       // save user details in the Database
-      await saveUserInFireStore(email.toLowerCase(), fName, lName, phone, position, imageUrl);
-      // show success feedback
-      // delay before next API call
-      await Future.delayed(const Duration(seconds: 1));
+      await saveUserInFireStore(email.toLowerCase(), fName, lName, phone, position, imageUrl, "", isUserAnAdmin);
       // Get details of user after signup
       await getCurrentUserDetails();
       UserFeedBack.showSuccess('Registration successful!');
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
       goToHomeScreen();
     }on FirebaseAuthException catch(e){
       AppLogger.e(e);
@@ -149,7 +148,6 @@ class AuthController extends GetxController {
   Future<void> signOutUser() async{
     try{
       await auth.signOut();
-      print("Logout Successful !");
       UserFeedBack.showSuccess('Logout Successful !');
       await Future.delayed(const Duration(seconds: 2));
       goToLoginScreen();
@@ -162,23 +160,23 @@ class AuthController extends GetxController {
 
 
   // Function which creates a user in the fireStore DB when registration is done
-  Future<void> saveUserInFireStore(String email, String fn, String ln, String phone, String position, String imageUrl) async {
+  Future<void> saveUserInFireStore(String email, String fn, String ln, String phone, String position, String imageUrl, String myAdminEmailAddress, bool isAdmin) async {
     UserModel userModel = UserModel(
       firstName: fn, 
       surname: ln, 
       email: email.toLowerCase(), 
-      isStaff: true, 
+      isAdmin: isAdmin, 
       phoneNumber: phone, 
       position: position, 
       dateEmployed: DateFormat.yMMMMEEEEd().format(DateTime.now()),
       imageUrl: imageUrl,
+      myAdminEmailAddress: myAdminEmailAddress,
       mySales: [],
     );
 
     // serializing it to Json and sending it to user collection in fireStore
-    await userFirestoreReference.doc(email).set(userModel.toJson());
-    print('Saved in FireStore');
-
+    await userFirestoreReference.doc(email).set(userModel.toJson()); 
+    
   }
 
 
@@ -187,26 +185,29 @@ class AuthController extends GetxController {
   Future<void> fetchAllUserData() async {
     try{
       
-      // retrieving user data
+      // retrieving user data. NB: Users here are the staff of the admin
       QuerySnapshot<Map<String, dynamic>> userData = await userFirestoreReference.get();
       final userList = userData.docs.map((e) => UserModel.fromSnapshot(e)).toList();
-      allUsersDataList.assignAll(userList);      
-      print(allUsersDataList);  
+
+      for(var user in userList){
+        if(!(user.isAdmin) && user.myAdminEmailAddress == getCurrentUser()!.email){
+          allUsersDataList.assignAll(userList); 
+          print("FETCH ALL USER DATA: $allUsersDataList");
+        }
+      }
+           
 
       // Looping through the user Data and fetching userSales data from "mySales Doc" and 
       // assigning each user's sales data to the field of my_sales in the userModel. 
       // This 'my_sales' field is a list of type 'SalesModel'
       for(var user in allUsersDataList){
-        // getting users sales data
+        // getting users sales data. Users here are the staff of the admin
         QuerySnapshot<Map<String, dynamic>> userSaleData = await userFirestoreReference.doc(user.email).collection('mySales').get();
         // serializing it to a salesModel object
         final salesDataList = userSaleData.docs.map(((e) => SalesModel.fromSnapshot(e))).toList();
         // assigning the serialized object the field of mySales in the userModel
-        user.mySales.assignAll(salesDataList);
-        // testing with prints
-        print(user.firstName);
-        print(user.isStaff);
-        print(user.mySales);
+        user.mySales.assignAll(salesDataList);       
+      
       }
 
     }catch (e){
@@ -220,6 +221,11 @@ class AuthController extends GetxController {
   // A function which creates user profile for a new staff
   Future<void> createNewStaff(String email, String password, String fName, String lName, String phoneNumber, String position, PlatformFile pickedImage, UploadTask uploadTask) async {
      try{
+      // a boolean variable
+      bool isUserAnAdmin = false;
+      // my  admin email
+      String adminEmail = getCurrentUser()!.email!;
+
       // start Loading
       UserFeedBack.showLoading();
       // create user with email & pswd
@@ -231,13 +237,15 @@ class AuthController extends GetxController {
       // delay before next API call
       await Future.delayed(const Duration(seconds: 1));
       // save user details in the Database
-      await saveUserInFireStore(email.toLowerCase(), fName, lName, phoneNumber, position, imageUrl);
+      await saveUserInFireStore(email.toLowerCase(), fName, lName, phoneNumber, position, imageUrl, adminEmail, isUserAnAdmin);
       // delay
       await Future.delayed(const Duration(seconds: 1));
       // show success feedback
       UserFeedBack.showSuccess('Profile Successfully created');
-      await Future.delayed(const Duration(seconds: 2));
+      // delay & sign out
+      await Future.delayed(const Duration(seconds: 1));
       signOutUser();
+
      }catch (e){
       AppLogger.e(e);
       Get.back();
@@ -279,6 +287,7 @@ class AuthController extends GetxController {
     try{
       // start loading
       UserFeedBack.showLoading();
+
       // Get the current user's info and data
       DocumentSnapshot<Map<String, dynamic>> userData = await userFirestoreReference.doc(getCurrentUser()!.email).get();
       // delay before calling the uploadTask function
@@ -289,13 +298,15 @@ class AuthController extends GetxController {
       await Future.delayed(const Duration(seconds: 1));
       // update the image field which is gotten from fetched user data
       await userData.reference.update({'image_url' : imageUrl});
+    
+      
       // delay before next API call
       await Future.delayed(const Duration(seconds: 1));
       // Get details of user after profile picture is changed
       await getCurrentUserDetails();
       // show success feedback
       UserFeedBack.showSuccess('You have successfully changed your profile picture!');
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
       goToHomeScreen();
     }catch (e){
       AppLogger.e(e);
@@ -317,16 +328,20 @@ class AuthController extends GetxController {
       var currentlyLoggedInUser = UserModel.fromSnapshot(user);
       currentUserData = currentlyLoggedInUser;
 
+      print("CURRENT USER_DATA: $currentUserData");
+
       // initializing our profile image reactive variable
       usersProfileImage.value = currentUserData.imageUrl;
 
       await Future.delayed(const Duration(seconds: 1));
       // getting user's sales
-      QuerySnapshot<Map<String, dynamic>> userSaleData = await userFirestoreReference.doc(currentUserData.email).collection('mySales').get();
+      QuerySnapshot<Map<String, dynamic>> userSaleData = await userFirestoreReference.doc(getCurrentUser()!.email).collection('mySales').get();
       // serializing it to a salesModel object
       final salesDataList = userSaleData.docs.map(((e) => SalesModel.fromSnapshot(e))).toList();
       // assigning the serialized object the field of mySales in the userModel
       currentUserData.mySales.assignAll(salesDataList);
+
+      print("CURRENT USER SALES: ${currentUserData.mySales}");
 
       // deactivating loading
       isLoading.value = false;
@@ -335,6 +350,63 @@ class AuthController extends GetxController {
     }
   }
 
+
+
+
+
+  // A function to send a reset email to the Admin
+   void kickOffPasswordReset(String email) async{
+      // start Loading
+      UserFeedBack.showLoading();
+      // send reset link
+      await auth.sendPasswordResetEmail(email: email).then((value) {
+      // success message
+      UserFeedBack.showSuccess("Password Reset link has been sent to your email");
+      // go to login
+      goToLoginScreen();
+
+    }).catchError((onError) {
+      Get.back();
+      UserFeedBack.showError("Error in Password Reset");
+    });
+ }
+
+
+
+
+  // A function to delete an account from firebase
+  void deleteUserAccount(String email,String pass) async{
+    AuthCredential credential = EmailAuthProvider.credential(email: email, password: pass);
+    await user.value!.reauthenticateWithCredential(credential).then((value) {
+      value.user!.delete().then((res) {
+        // go to login screen
+        goToLoginScreen();
+        // show success msg
+        UserFeedBack.showSuccess("User Account Deleted ");
+      });
+    }
+    ).catchError((onError)=> UserFeedBack.showError("Failed to delete user account"));
+  }
+
+
+
+
+  
+  // A function which checks if the user asking for reset Pswd is an admin or not
+  Future<bool> adminCheckBeforePswdReset(String suppliedEmail) async {
+    try{
+      // Getting loggedIn user's data
+      DocumentSnapshot<Map<String, dynamic>> user = await userFirestoreReference.doc(suppliedEmail.toLowerCase()).get();
+      var userAskingForReset = UserModel.fromSnapshot(user);
+
+      // returning a bool after user detail fetch
+      return userAskingForReset.isAdmin;
+    }catch (e){
+      AppLogger.e(e);
+      // if error
+      return false;
+    }
+  }
 
 
 }

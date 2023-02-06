@@ -134,7 +134,8 @@ class InventoryListScreen extends StatelessWidget {
           }
         ),
       ),
-      floatingActionButton: authController.currentUserData.isStaff? null : FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
+      // floatingActionButton: !(authController.currentUserData.isAdmin)? null : FloatingActionButton(
         elevation: 3,
         child: const Icon(Icons.add),
         onPressed: (){ 

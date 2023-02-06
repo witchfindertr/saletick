@@ -194,9 +194,11 @@ class _SellAProductScreenState extends State<SellAProductScreen> {
                                   Get.back();
                                   // Calling our function for Selling of Product (productController)                                
                                   productController.sellProductItem(
+                                    authController.currentUserData.myAdminEmailAddress,
                                     productModel: widget.product, 
                                     unitSold: int.parse(unitSoldController.text.trim()),
-                                    soldTo: soldToWhoController.text.trim()
+                                    soldTo: soldToWhoController.text.trim(),
+                                    isAdmin: authController.currentUserData.isAdmin,
                                   );
                                 }, 
                                 confirmQuestion: 'You want to go on to sell this product?'

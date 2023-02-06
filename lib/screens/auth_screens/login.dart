@@ -6,13 +6,14 @@ import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/app_constants/custom_text_styles.dart';
 import 'package:saletick/controllers/auth_controller.dart';
 import 'package:saletick/custom_widgets/buttons/main_button.dart';
+import 'package:saletick/screens/auth_screens/register_screen.dart';
+import 'package:saletick/screens/auth_screens/reset_passeord_screen.dart';
 
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-// final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class LoginScreen extends StatefulWidget {
+  
   static const routeName = "/employeeloginpage";
+
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
@@ -87,6 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextFormField(
                         autocorrect: true,                                           
                         controller: emailController,
+                        textInputAction: TextInputAction.next,
                         validator: ((email) {
                           if(email!.isEmpty){
                             return 'Email field is empty. Provide your email';
@@ -127,6 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       margin: EdgeInsets.only(bottom: Dimensions.size15),
                       child: TextFormField(
                         controller: passwordController,
+                        textInputAction: TextInputAction.done,
                         decoration: InputDecoration(
                           fillColor: AppColors.inputFillColor,
                           filled: true,
@@ -169,8 +172,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
                 children: [
                   InkWell(
+                    onTap: () => Get.to(const ResetPasswordScreen()),
                     child: Text(
-                      "Click to go in",
+                      "Forgot Password",
                       style: headline4.copyWith(color: AppColors.mainTextColor2),
                     ),
                   ),
@@ -190,25 +194,25 @@ class _LoginScreenState extends State<LoginScreen> {
               ),  
                 SizedBox(height: Dimensions.size40),
               // Don't have account? section
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center, 
-              //   children: [
-              //     Text(
-              //       "Don't have an account?",
-              //       style: headline4,
-              //     ),
-              //     SizedBox(width: Dimensions.size9),
-              //     InkWell(
-              //       onTap: (){
-              //         Get.toNamed(RegisterScreen.routeName);
-              //       },
-              //       child: Text(
-              //         "Create One",
-              //         style: headline4.copyWith(color: AppColors.mainTextColor1),
-              //       ),
-              //     ),
-              //   ]
-              // ),              
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center, 
+                children: [
+                  Text(
+                    "Don't have an account?",
+                    style: headline4,
+                  ),
+                  SizedBox(width: Dimensions.size9),
+                  InkWell(
+                    onTap: (){
+                      Get.toNamed(RegisterScreen.routeName);
+                    },
+                    child: Text(
+                      "Create One",
+                      style: headline4.copyWith(color: AppColors.mainTextColor1),
+                    ),
+                  ),
+                ]
+              ),              
             ],
           ),
         ),

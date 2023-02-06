@@ -22,23 +22,38 @@ class ProductController extends GetxController{
   final myTime = ''.obs;
   final sellProductTotalAmount = 0.0.obs;
 
+  // instance of auth controller
+  AuthController _authController = Get.find<AuthController>();
+  
+
   @override
   void onReady() {
-    getAllProducts();
-    getAllSalesData();
+    getAllProducts(_authController.currentUserData.isAdmin);
+    getAllSalesData(_authController.currentUserData.isAdmin);
     super.onReady();
   }
 
-  AuthController _authController = Get.find<AuthController>();
+
+
+
 
 
   // A function which gets all the products in the inventory
-  Future<void> getAllProducts() async {
+  Future<void> getAllProducts(bool isAdmin) async {
     try{
-      QuerySnapshot<Map<String, dynamic>> productData = await productFirestoreReference.get();
-      var products = productData.docs.map((e) => ProductModel.fromSnapshot(e)).toList();
-      allProductsList.assignAll(products);
-      print('PRODUCTS GOTTEN  (success) $allProductsList');
+      if(isAdmin){
+        QuerySnapshot<Map<String, dynamic>> productData = await productFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('PRODUCTS').get();
+        var products = productData.docs.map((e) => ProductModel.fromSnapshot(e)).toList();
+        allProductsList.assignAll(products);
+        print('PRODUCTS GOTTEN  (success) $allProductsList');
+      }else{
+        QuerySnapshot<Map<String, dynamic>> productData = await productFirestoreReference.doc(_authController.currentUserData.myAdminEmailAddress).collection('PRODUCTS').get();
+        var products = productData.docs.map((e) => ProductModel.fromSnapshot(e)).toList();
+        allProductsList.assignAll(products);
+        print('PRODUCTS GOTTEN  (success) $allProductsList');
+      }
+     
+      
     }catch (e){
       AppLogger.e(e);
     }
@@ -51,13 +66,14 @@ class ProductController extends GetxController{
   Future<void> createProductItem(ProductModel product) async {
     try{
       UserFeedBack.showLoading();
-      await productFirestoreReference.doc(product.name.toUpperCase()).set(product.toJson());
+      await productFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('PRODUCTS').doc(product.name.toUpperCase()).set(product.toJson());
       // little delay before getting updated products from our DB
       await Future.delayed(const Duration(seconds: 1));
-      getAllProducts();
+      // Getting all products from the DB
+      getAllProducts(true);
       UserFeedBack.showSuccess('Product has been added successfully !');
       // delay and go to home
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
       _authController.goToHomeScreen();
     }catch (e){
       AppLogger.e(e);
@@ -70,9 +86,10 @@ class ProductController extends GetxController{
 
 
   // A function which Sells a product
-  Future<void> sellProductItem({required ProductModel productModel, required int unitSold, required String soldTo}) async {
+  Future<void> sellProductItem(String adminEmail, {required ProductModel productModel, required int unitSold, required String soldTo, required bool isAdmin}) async {
     DateTime currentDateTime = DateTime.now();
     String productName = productModel.name.toUpperCase();
+
     try{
       UserFeedBack.showLoading();
       // Creating an object of the Sales Model
@@ -87,25 +104,43 @@ class ProductController extends GetxController{
         dateCreated: currentDateTime,
         soldTo: soldTo
       );
+
       // Save sales info to the general sales collection in the DB
-      await salesFirestoreReference.doc("$productName : $currentDateTime").set(salesModel.toJson());
+      if(isAdmin){
+        //for admin
+        await salesFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('SALES').doc("$productName : $currentDateTime").set(salesModel.toJson());
+      }else{
+        // for staff
+        await salesFirestoreReference.doc(adminEmail).collection('SALES').doc("$productName : $currentDateTime").set(salesModel.toJson());
+      }
+      
       // little delay before the next operation
       await Future.delayed(const Duration(seconds: 1));
+
       // Save current user's sales to the user data in the DB
       await userFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('mySales').doc("$productName : $currentDateTime").set(salesModel.toJson());
-      // Update the units(quantity) of the product
-      updateUnitsOfProducts(productModel, unitSold);
+    
+      // Update the units(quantity) of the product: checks wether user is an admin before processing . . .
+      isAdmin? updateUnitsOfProducts(productModel, unitSold, true) : updateUnitsOfProducts(productModel, unitSold, false);
+
       // little delay before getting updated products from our DB
       await Future.delayed(const Duration(seconds: 1));
-      getAllProducts();
+
+      // fetch all products data
+      if(isAdmin){
+        getAllProducts(true);
+      }else{
+        getAllProducts(false);
+      }
+      
       // little delay before getting sales Data
       await Future.delayed(const Duration(seconds: 1));
-      getAllSalesData();
-
+      // Getting sales data: checks if user is an Admin before continuing
+      isAdmin? getAllSalesData(true) : getAllSalesData(false);
 
       UserFeedBack.showSuccess('Product has been added to sales !');
       // delay and go to home
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
       _authController.goToHomeScreen();
     }catch (e){
       AppLogger.e(e);
@@ -132,17 +167,29 @@ class ProductController extends GetxController{
 
 
   // A function which updates the units (quantities) of the product being sold
-  Future<void> updateUnitsOfProducts(ProductModel product, int unitSold) async {
+  Future<void> updateUnitsOfProducts(ProductModel product, int unitSold, bool isAdmin) async {
     try{
       // Get a specific product (that which is being sold)
-      DocumentSnapshot<Map<String, dynamic>> data =  await productFirestoreReference.doc(product.name.toUpperCase()).get();
-      // updating the units of the sold product data gotten
-      data.reference.update(
-        {
-          'unit_sold' : product.unitSold += unitSold,
-          'unit_available' : product.unitAvailable - unitSold,
-        }
-      );
+      if(isAdmin){
+        DocumentSnapshot<Map<String, dynamic>> data =  await productFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('PRODUCTS').doc(product.name.toUpperCase()).get();
+        // updating the units of the sold product data gotten
+        data.reference.update(
+          {
+            'unit_sold' : product.unitSold += unitSold,
+            'unit_available' : product.unitAvailable - unitSold,
+          }
+        );
+      }else{
+        DocumentSnapshot<Map<String, dynamic>> data =  await productFirestoreReference.doc(_authController.currentUserData.myAdminEmailAddress).collection('PRODUCTS').doc(product.name.toUpperCase()).get();
+        // updating the units of the sold product data gotten
+        data.reference.update(
+          {
+            'unit_sold' : product.unitSold += unitSold,
+            'unit_available' : product.unitAvailable - unitSold,
+          }
+        );
+      }      
+      
     }catch(e){
       AppLogger.e(e);
     }
@@ -151,12 +198,20 @@ class ProductController extends GetxController{
 
 
   // A function which gets all the sales made
-  void getAllSalesData() async {
+  void getAllSalesData(bool isAdmin) async {
     try{
-      QuerySnapshot<Map<String, dynamic>> salesData = await salesFirestoreReference.get();
-      var sales = salesData.docs.map((e) => SalesModel.fromSnapshot(e)).toList();
-      allSalesDataList.assignAll(sales);
-      print('SALES GOTTEN  (success) $allSalesDataList');
+      if(isAdmin){
+        QuerySnapshot<Map<String, dynamic>> salesData = await salesFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('SALES').get();
+        var sales = salesData.docs.map((e) => SalesModel.fromSnapshot(e)).toList();
+        allSalesDataList.assignAll(sales);
+        print('SALES ADMIN GOTTEN  (success) $allSalesDataList');
+      }else{
+        QuerySnapshot<Map<String, dynamic>> salesData = await salesFirestoreReference.doc(_authController.currentUserData.myAdminEmailAddress).collection('SALES').get();
+        var sales = salesData.docs.map((e) => SalesModel.fromSnapshot(e)).toList();
+        allSalesDataList.assignAll(sales);
+        print('SALES STAFF GOTTEN  (success) $allSalesDataList');  
+      }
+      
     }catch (e){
       AppLogger.e(e);
     }
@@ -170,8 +225,9 @@ class ProductController extends GetxController{
     try{
       // start loading as request is being processed
       UserFeedBack.showLoading();
+
       // Get a specific product
-      DocumentSnapshot<Map<String, dynamic>> data =  await productFirestoreReference.doc(product.name.toUpperCase()).get();
+      DocumentSnapshot<Map<String, dynamic>> data =  await productFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('PRODUCTS').doc(product.name.toUpperCase()).get();
       // updating the units of the product
       await data.reference.update(
         {
@@ -180,14 +236,16 @@ class ProductController extends GetxController{
           'unit_sold' : 0
         }
       );
-      // little delay before getting updated products from our DB
-      await Future.delayed(const Duration(seconds: 1));
-      getAllProducts();
+      
+      // fetch all products data
+      getAllProducts(true);
 
       UserFeedBack.showSuccess('Product successfully restocked !');
       // delay and go to home
-      await Future.delayed(const Duration(seconds: 2));
+
+      await Future.delayed(const Duration(seconds: 1));
       _authController.goToHomeScreen();
+
     }catch (e){
       AppLogger.e(e);
       Get.back();

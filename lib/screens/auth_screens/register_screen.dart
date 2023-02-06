@@ -5,6 +5,7 @@ import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/app_constants/custom_text_styles.dart';
 import 'package:saletick/controllers/auth_controller.dart';
 import 'package:saletick/custom_widgets/buttons/main_button.dart';
+import 'package:saletick/screens/auth_screens/reset_passeord_screen.dart';
 
 
 class RegisterScreen extends StatefulWidget {
@@ -27,6 +28,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final firstNameController = TextEditingController();
 
   var authController = Get.find<AuthController>();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    lastNameController.dispose();
+    firstNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +80,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: TextFormField(
                         autocorrect: true,                                           
                         controller: emailController,
+                        textInputAction: TextInputAction.next,
                         validator: ((email) {
                           if(email!.isEmpty){
                             return 'Email field is empty. Provide your email';
@@ -110,7 +121,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),                   
                       alignment: Alignment.topCenter,
                       child: TextFormField(
-                        autocorrect: true,                                           
+                        autocorrect: true,   
+                        textInputAction: TextInputAction.next,                                        
                         controller: firstNameController,
                         validator: ((fname) {
                           if(fname!.isEmpty){
@@ -151,7 +163,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),                   
                       alignment: Alignment.topCenter,
                       child: TextFormField(
-                        autocorrect: true,                                           
+                        autocorrect: true, 
+                        textInputAction: TextInputAction.next,                                          
                         controller: lastNameController,
                         validator: ((lname) {
                           if(lname!.isEmpty){
@@ -192,6 +205,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       margin: EdgeInsets.only(bottom: Dimensions.size15),
                       child: TextFormField(
                         controller: passwordController,
+                        textInputAction: TextInputAction.next,
                         decoration: InputDecoration(
                           fillColor: AppColors.inputFillColor,
                           filled: true,
@@ -233,6 +247,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
                 children: [
                   InkWell(
+                    onTap: () => Get.to(const ResetPasswordScreen()),
                     child: Text(
                       "Forgot Password?",
                       style: headline4.copyWith(color: AppColors.mainTextColor2),
