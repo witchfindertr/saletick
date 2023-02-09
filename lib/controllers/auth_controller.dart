@@ -149,7 +149,7 @@ class AuthController extends GetxController {
     try{
       await auth.signOut();
       UserFeedBack.showSuccess('Logout Successful !');
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
       goToLoginScreen();
     }catch (e){
       AppLogger.e(e);
@@ -188,11 +188,14 @@ class AuthController extends GetxController {
       // retrieving user data. NB: Users here are the staff of the admin
       QuerySnapshot<Map<String, dynamic>> userData = await userFirestoreReference.get();
       final userList = userData.docs.map((e) => UserModel.fromSnapshot(e)).toList();
-
-      for(var user in userList){
-        if(!(user.isAdmin) && user.myAdminEmailAddress == getCurrentUser()!.email){
-          allUsersDataList.assignAll(userList); 
-          print("FETCH ALL USER DATA: $allUsersDataList");
+      
+      // Checking if a user is a staff of a particular admin
+      for(var u in userList){
+        if(u.myAdminEmailAddress == getCurrentUser()!.email && !u.isAdmin){
+          print("${u.myAdminEmailAddress} = ${getCurrentUser()!.email}");
+          // adding each of the staff to the list
+          allUsersDataList.add(u);
+          print("STAFF LIST $allUsersDataList");
         }
       }
            
@@ -200,13 +203,13 @@ class AuthController extends GetxController {
       // Looping through the user Data and fetching userSales data from "mySales Doc" and 
       // assigning each user's sales data to the field of my_sales in the userModel. 
       // This 'my_sales' field is a list of type 'SalesModel'
-      for(var user in allUsersDataList){
+      for(var u in allUsersDataList){
         // getting users sales data. Users here are the staff of the admin
-        QuerySnapshot<Map<String, dynamic>> userSaleData = await userFirestoreReference.doc(user.email).collection('mySales').get();
+        QuerySnapshot<Map<String, dynamic>> userSaleData = await userFirestoreReference.doc(u.email).collection('mySales').get();
         // serializing it to a salesModel object
         final salesDataList = userSaleData.docs.map(((e) => SalesModel.fromSnapshot(e))).toList();
         // assigning the serialized object the field of mySales in the userModel
-        user.mySales.assignAll(salesDataList);       
+        u.mySales.assignAll(salesDataList);       
       
       }
 
@@ -219,15 +222,16 @@ class AuthController extends GetxController {
 
 
   // A function which creates user profile for a new staff
-  Future<void> createNewStaff(String email, String password, String fName, String lName, String phoneNumber, String position, PlatformFile pickedImage, UploadTask uploadTask) async {
+  Future<void> createNewStaff(String email, String password, String fName, String lName, String phoneNumber, String position, PlatformFile pickedImage) async {
      try{
+      // start Loading
+      UserFeedBack.showLoading();
+
       // a boolean variable
       bool isUserAnAdmin = false;
       // my  admin email
       String adminEmail = getCurrentUser()!.email!;
-
-      // start Loading
-      UserFeedBack.showLoading();
+            
       // create user with email & pswd
       await auth.createUserWithEmailAndPassword(email: email, password: password);
       // delay before next API call
@@ -244,7 +248,9 @@ class AuthController extends GetxController {
       UserFeedBack.showSuccess('Profile Successfully created');
       // delay & sign out
       await Future.delayed(const Duration(seconds: 1));
-      signOutUser();
+      // sign the admin out and re-route him to the log in screen
+      auth.signOut();
+      goToLoginScreen();
 
      }catch (e){
       AppLogger.e(e);
@@ -374,7 +380,7 @@ class AuthController extends GetxController {
 
 
 
-  // A function to delete an account from firebase
+  // A function to delete an account from firebase. NOT USED YET
   void deleteUserAccount(String email,String pass) async{
     AuthCredential credential = EmailAuthProvider.credential(email: email, password: pass);
     await user.value!.reauthenticateWithCredential(credential).then((value) {
@@ -407,6 +413,47 @@ class AuthController extends GetxController {
       return false;
     }
   }
+
+
+
+
+
+  // A function which enables the admin to change the password of his/her various staff
+  Future<void> changeStaffPassword(String currentPswd, String newPswd, String email, String staffName) async {
+     try{
+      // start Loading
+      UserFeedBack.showLoading();
+
+      // sign in the staff whose password is to be changed
+      await auth.signInWithEmailAndPassword(email: email, password: currentPswd);
+
+      var loggedInUser = getCurrentUser();
+
+      // The user/staff whose password is to be changed must be authenticated. There should be a re-authentication
+      final cred = EmailAuthProvider.credential(email: email, password: currentPswd);
+      await loggedInUser!.reauthenticateWithCredential(cred);
+
+      // changing the password of the staff after re-authentication
+      await loggedInUser.updatePassword(newPswd);
+
+      // deactivating loading
+      isLoading.value = false;
+
+      // Give success message and logout the Admin after operation is successful
+      await auth.signOut();
+      UserFeedBack.showSuccess("You have successfully changed $staffName's password. Please login again!");
+      await Future.delayed(const Duration(seconds: 3));
+      goToLoginScreen();        
+ 
+    }catch (e){
+      Get.back();
+      AppLogger.e(e);
+    }
+
+  }
+
+
+
 
 
 }

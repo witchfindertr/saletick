@@ -28,8 +28,6 @@ class ProductController extends GetxController{
 
   @override
   void onReady() {
-    getAllProducts(_authController.currentUserData.isAdmin);
-    getAllSalesData(_authController.currentUserData.isAdmin);
     super.onReady();
   }
 

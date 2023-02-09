@@ -95,8 +95,7 @@ class _StaffListScreenState extends State<StaffListScreen> {
           );
         }
       ),
-      // floatingActionButton: !(controller.currentUserData.isAdmin)? null : FloatingActionButton(
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: !(controller.currentUserData.isAdmin)? null : FloatingActionButton(
         elevation: 3,
         child: const Icon(Icons.add),
         onPressed: (){ 

@@ -9,6 +9,7 @@ import 'package:saletick/custom_widgets/header/header_widget.dart';
 import 'package:saletick/custom_widgets/texts/text_n_divider_header.dart';
 import 'package:saletick/custom_widgets/texts/text_title_value_widget.dart';
 import 'package:saletick/models/user_model.dart';
+import 'package:saletick/screens/auth_screens/reset_staff_pswd_screen.dart';
 import 'package:saletick/screens/dashboard/specific_staff_sales.dart';
 
 
@@ -41,13 +42,22 @@ class StaffDetailScreen extends StatelessWidget {
                   SizedBox(height: Dimensions.size20),
                   // Staff Other Info
                   TitleAndValueWidget(title: 'E-mail', value: staff.email), // email
-                  SizedBox(height: Dimensions.size14),
+                  SizedBox(height: Dimensions.size16),
                   TitleAndValueWidget(title: 'Date Employed', value: staff.dateEmployed), // date employed
-                  SizedBox(height: Dimensions.size14),
+                  SizedBox(height: Dimensions.size16),
                   TitleAndValueWidget(title: 'Position', value: staff.position),  // position
-                  SizedBox(height: Dimensions.size14),
+                  SizedBox(height: Dimensions.size16),
+                  TitleAndValueWidget(
+                    title: 'Change Password', 
+                    value: 'Tap Here',
+                    valueTextColor: Colors.blue,
+                    onValueTap: (() {
+                      Get.to(ResetStaffPasswordScreen(staffObj: staff));
+                    }),
+                  ),  // reset staff password
+                  SizedBox(height: Dimensions.size16),
                   TitleAndValueWidget(title: 'Total Sales', value: staff.mySales.length.toString()), // total sales
-                  SizedBox(height: Dimensions.size14),
+                  SizedBox(height: Dimensions.size16),
                   // See sales button
                   Align(
                     alignment: Alignment.centerLeft,

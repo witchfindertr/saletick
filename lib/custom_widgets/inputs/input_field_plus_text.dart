@@ -20,7 +20,7 @@ class InputFieldPlusTextWidget extends StatelessWidget {
     this.myHintText, 
     this.onChanged, 
     this.isEmail = false,
-    this.isPassword = false
+    this.isPassword = false, 
   }) : super(key: key);
 
   @override
@@ -62,6 +62,16 @@ class InputFieldPlusTextWidget extends StatelessWidget {
                   return 'Email field is empty. Provide your email';
                 }else if(!value.contains('@') || !value.contains('.')){
                   return 'Invalid email address';
+                }else{
+                  return null;
+                }
+              }
+
+               if(isPassword) {
+                if (value!.isEmpty) {
+                  return 'password field is empty';                              
+                }else if(value.length < 9){
+                  return "Needed at least 9 characters";
                 }else{
                   return null;
                 }

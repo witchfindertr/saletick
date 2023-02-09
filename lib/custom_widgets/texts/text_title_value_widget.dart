@@ -6,8 +6,10 @@ import 'package:saletick/app_constants/custom_text_styles.dart';
 class TitleAndValueWidget extends StatelessWidget {
   final String title;
   final String value;
+  final VoidCallback? onValueTap;
+  final Color? valueTextColor;
   
-  const TitleAndValueWidget({Key? key, required this.title, required this.value}) : super(key: key);
+  const TitleAndValueWidget({Key? key, required this.title, required this.value, this.onValueTap, this.valueTextColor}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +27,12 @@ class TitleAndValueWidget extends StatelessWidget {
         // value
         Align(
           alignment: Alignment.centerLeft,
-          child: Text(
-            value,
-            style: headline5.copyWith(letterSpacing: 1),
+          child: InkWell(
+            onTap: onValueTap,
+            child: Text(
+              value,
+              style: headline5.copyWith(letterSpacing: 1, color: valueTextColor?? Colors.black),
+            ),
           ),
         ),
       ],

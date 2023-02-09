@@ -12,17 +12,29 @@ import 'package:saletick/screens/products/add_new_product.dart';
 import 'package:saletick/screens/products/inventory_detail_screen.dart';
 
 
-class InventoryListScreen extends StatelessWidget {
+class InventoryListScreen extends StatefulWidget {
   const InventoryListScreen({Key? key}) : super(key: key);
 
-
   @override
-  Widget build(BuildContext context) {
-    // instance of product controller
+  State<InventoryListScreen> createState() => _InventoryListScreenState();
+}
+
+class _InventoryListScreenState extends State<InventoryListScreen> {
+
+  // instance of product controller
     ProductController productController = Get.find<ProductController>();
 
-    // instance of auth controller
+  // instance of auth controller
     AuthController authController = Get.find<AuthController>();
+
+  @override
+  void initState() {
+    productController.getAllProducts(authController.currentUserData.isAdmin);
+    productController.getAllSalesData(authController.currentUserData.isAdmin);
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {    
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -134,8 +146,7 @@ class InventoryListScreen extends StatelessWidget {
           }
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-      // floatingActionButton: !(authController.currentUserData.isAdmin)? null : FloatingActionButton(
+      floatingActionButton: !(authController.currentUserData.isAdmin)? null : FloatingActionButton(
         elevation: 3,
         child: const Icon(Icons.add),
         onPressed: (){ 

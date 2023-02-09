@@ -35,7 +35,6 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
 
   // IMAGE UPLOAD
   PlatformFile? pickedImage;
-  UploadTask? uploadTask;
 
   // instance of auth controller
   var authController = Get.find<AuthController>();
@@ -151,6 +150,12 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
                     MainButton(
                       onPressed: () {
                         // checking if the pswd1 and pswd2 matches 
+                        if(passwordController.text.trim().length < 9){
+                          UserFeedBack.showError('Needed at least 9 characters for a password');
+                          return;
+                        }
+
+                        // checking if the pswd1 and pswd2 matches 
                         if(passwordController.text.trim() != confirmPasswordController.text.trim()){
                           UserFeedBack.showError('Password Mismatch');
                           return;
@@ -166,7 +171,8 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
                               onConfirm: (){
                                 // pop off the confirm dialog
                                 Get.back();
-                                // call the create Staff function
+
+                                // call the create Staff function                               
                                 authController.createNewStaff(
                                   emailController.text.trim(), 
                                   passwordController.text.trim(),
@@ -175,8 +181,7 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
                                   phoneNumberController.text.trim(), 
                                   positionController.text.trim(),
                                   pickedImage!,
-                                  uploadTask!,
-                                );
+                                );                              
                               }, 
                               confirmQuestion: 'Create New Staff Profile?'
                             );
