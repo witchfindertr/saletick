@@ -2,8 +2,8 @@ import 'package:get/get.dart';
 import 'package:saletick/screens/auth_screens/login.dart';
 import 'package:saletick/screens/auth_screens/register_screen.dart';
 import 'package:saletick/screens/home/tarnor_home.dart';
+import 'package:saletick/screens/intro/intro_screen.dart';
 import 'package:saletick/screens/intro/splash_screen.dart';
-import 'package:saletick/screens/intro/welcome.dart';
 import 'package:saletick/screens/products/add_new_product.dart';
 
 
@@ -16,11 +16,12 @@ class Routes {
       page: () => const SplashScreen(),
       transition: Transition.fadeIn,      
     ),
-    // welcome screen
+    // Get started screen
     GetPage(
-      name: WelcomeScreen.routeName,
-      page: () => const WelcomeScreen(),
-      transition: Transition.zoom,      
+      name: IntroScreen.routeName,
+      page: () => const IntroScreen(),
+      transition: Transition.fade,   
+      transitionDuration: const Duration(seconds: 3),   
     ),
     // Home screen
     GetPage(

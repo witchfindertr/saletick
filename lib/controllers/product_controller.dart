@@ -69,7 +69,7 @@ class ProductController extends GetxController{
       await Future.delayed(const Duration(seconds: 1));
       // Getting all products from the DB
       getAllProducts(true);
-      UserFeedBack.showSuccess('Product has been added successfully !');
+      // UserFeedBack.showSuccess('Product has been added successfully !');
       // delay and go to home
       await Future.delayed(const Duration(seconds: 1));
       _authController.goToHomeScreen();
@@ -136,7 +136,7 @@ class ProductController extends GetxController{
       // Getting sales data: checks if user is an Admin before continuing
       isAdmin? getAllSalesData(true) : getAllSalesData(false);
 
-      UserFeedBack.showSuccess('Product has been added to sales !');
+      // UserFeedBack.showSuccess('Product has been added to sales !');
       // delay and go to home
       await Future.delayed(const Duration(seconds: 1));
       _authController.goToHomeScreen();
@@ -238,7 +238,7 @@ class ProductController extends GetxController{
       // fetch all products data
       getAllProducts(true);
 
-      UserFeedBack.showSuccess('Product successfully restocked !');
+      // UserFeedBack.showSuccess('Product successfully restocked !');
       // delay and go to home
 
       await Future.delayed(const Duration(seconds: 1));

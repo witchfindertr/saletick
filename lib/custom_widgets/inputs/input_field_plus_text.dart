@@ -34,7 +34,7 @@ class InputFieldPlusTextWidget extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-              color: AppColors.mainTextColor3,
+              color: AppColors.mainColor,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -86,10 +86,7 @@ class InputFieldPlusTextWidget extends StatelessWidget {
               ),                    
               fillColor: AppColors.inputFillColor,
               filled: true,                          
-              enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
-              errorStyle: Theme.of(context).inputDecorationTheme.errorStyle,                            
-              errorBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
-              focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder, 
+              border: InputBorder.none,
               contentPadding:     EdgeInsets.symmetric(vertical: Dimensions.size3, horizontal: Dimensions.size10)                      
             ),
           ),

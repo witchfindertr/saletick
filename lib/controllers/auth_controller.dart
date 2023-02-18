@@ -11,7 +11,7 @@ import 'package:saletick/models/sales_model.dart';
 import 'package:saletick/models/user_model.dart';
 import 'package:saletick/screens/auth_screens/login.dart';
 import 'package:saletick/screens/home/tarnor_home.dart';
-import 'package:saletick/screens/intro/welcome.dart';
+import 'package:saletick/screens/intro/intro_screen.dart';
 import 'package:saletick/utilities/feedback.dart';
 import 'package:saletick/utilities/firebase_references.dart';
 import 'package:saletick/utilities/logger.dart';
@@ -61,7 +61,7 @@ class AuthController extends GetxController {
       await getCurrentUserDetails();
       goToHomeScreen();
     }else{
-      Get.offAllNamed(WelcomeScreen.routeName);
+      Get.offAllNamed(IntroScreen.routeName);
     }
   }
 
@@ -108,7 +108,7 @@ class AuthController extends GetxController {
       await saveUserInFireStore(email.toLowerCase(), fName, lName, phone, position, imageUrl, "", isUserAnAdmin);
       // Get details of user after signup
       await getCurrentUserDetails();
-      UserFeedBack.showSuccess('Registration successful!');
+      // UserFeedBack.showSuccess('Registration successful!');
       await Future.delayed(const Duration(seconds: 1));
       goToHomeScreen();
     }on FirebaseAuthException catch(e){
@@ -131,7 +131,7 @@ class AuthController extends GetxController {
       // Get details of user after login
       await getCurrentUserDetails();
       // show success feedback
-      UserFeedBack.showSuccess('You have successfully logged In!');
+      // UserFeedBack.showSuccess('You have successfully logged In!');
       await Future.delayed(const Duration(seconds: 2));
       goToHomeScreen();
     }on FirebaseAuthException catch(e){
@@ -148,7 +148,7 @@ class AuthController extends GetxController {
   Future<void> signOutUser() async{
     try{
       await auth.signOut();
-      UserFeedBack.showSuccess('Logout Successful !');
+      // UserFeedBack.showSuccess('Logout Successful !');
       await Future.delayed(const Duration(seconds: 1));
       goToLoginScreen();
     }catch (e){
@@ -245,7 +245,7 @@ class AuthController extends GetxController {
       // delay
       await Future.delayed(const Duration(seconds: 1));
       // show success feedback
-      UserFeedBack.showSuccess('Profile Successfully created');
+      // UserFeedBack.showSuccess('Profile Successfully created');
       // delay & sign out
       await Future.delayed(const Duration(seconds: 1));
       // sign the admin out and re-route him to the log in screen
@@ -311,7 +311,7 @@ class AuthController extends GetxController {
       // Get details of user after profile picture is changed
       await getCurrentUserDetails();
       // show success feedback
-      UserFeedBack.showSuccess('You have successfully changed your profile picture!');
+      // UserFeedBack.showSuccess('You have successfully changed your profile picture!');
       await Future.delayed(const Duration(seconds: 1));
       goToHomeScreen();
     }catch (e){
@@ -367,7 +367,7 @@ class AuthController extends GetxController {
       // send reset link
       await auth.sendPasswordResetEmail(email: email).then((value) {
       // success message
-      UserFeedBack.showSuccess("Password Reset link has been sent to your email");
+      // UserFeedBack.showSuccess("Password Reset link has been sent to your email");
       // go to login
       goToLoginScreen();
 
@@ -388,7 +388,7 @@ class AuthController extends GetxController {
         // go to login screen
         goToLoginScreen();
         // show success msg
-        UserFeedBack.showSuccess("User Account Deleted ");
+        // UserFeedBack.showSuccess("User Account Deleted ");
       });
     }
     ).catchError((onError)=> UserFeedBack.showError("Failed to delete user account"));
@@ -441,7 +441,7 @@ class AuthController extends GetxController {
 
       // Give success message and logout the Admin after operation is successful
       await auth.signOut();
-      UserFeedBack.showSuccess("You have successfully changed $staffName's password. Please login again!");
+      // UserFeedBack.showSuccess("You have successfully changed $staffName's password. Please login again!");
       await Future.delayed(const Duration(seconds: 3));
       goToLoginScreen();        
  
