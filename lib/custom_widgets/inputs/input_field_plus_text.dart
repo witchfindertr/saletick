@@ -11,6 +11,7 @@ class InputFieldPlusTextWidget extends StatelessWidget {
   final Function(String value)? onChanged;
   final bool isEmail;
   final bool isPassword;
+  final TextInputAction customTextInputAction;
   
   const InputFieldPlusTextWidget({
     Key? key, 
@@ -20,7 +21,8 @@ class InputFieldPlusTextWidget extends StatelessWidget {
     this.myHintText, 
     this.onChanged, 
     this.isEmail = false,
-    this.isPassword = false, 
+    this.isPassword = false,
+    required this.customTextInputAction, 
   }) : super(key: key);
 
   @override
@@ -34,22 +36,23 @@ class InputFieldPlusTextWidget extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-              color: AppColors.mainColor,
+              color: Color.fromARGB(255, 128, 106, 252),
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
         // The Input Field
         Container(
-          padding: EdgeInsets.symmetric(vertical: Dimensions.size10, horizontal: Dimensions.size10),                   
+          padding: EdgeInsets.symmetric(vertical: Dimensions.size5, horizontal: Dimensions.size10),                          
           child: TextFormField(
             autocorrect: true,
             obscureText: isPassword? true : false,
             controller: textController,
+            textInputAction: customTextInputAction,
             keyboardType: isItForNumber? TextInputType.number : TextInputType.text,
             onChanged: onChanged,    
             validator: ((value) {
-              if(!isEmail){
+              if(!isEmail && !isPassword){
                 if(value!.isEmpty){
                   return 'Provide a value';
                 }else{
@@ -69,7 +72,7 @@ class InputFieldPlusTextWidget extends StatelessWidget {
 
                if(isPassword) {
                 if (value!.isEmpty) {
-                  return 'password field is empty';                              
+                  return 'Password field is empty';                              
                 }else if(value.length < 9){
                   return "Needed at least 9 characters";
                 }else{

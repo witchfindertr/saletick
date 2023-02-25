@@ -7,12 +7,9 @@ class ProductModel {
   int unit;
   int unitSold;
   int unitAvailable;
-  String shape;
-  String size;
-  String type;
-  String material;
-  String length;
-  List categories;
+  String category;
+  String productID;
+  String description;
 
 
   ProductModel({
@@ -22,12 +19,9 @@ class ProductModel {
     required this.unit,
     required this.unitSold,
     required this.unitAvailable,
-    required this.shape,
-    required this.size,
-    required this.type,
-    required this.material,
-    required this.length,
-    required this.categories,
+    required this.category,
+    required this.productID,
+    required this.description,
   });
 
 
@@ -38,13 +32,9 @@ class ProductModel {
     unit = json['unit'],
     unitSold = json['unit_sold'],
     unitAvailable = json['unit_available'],
-    shape = json['shape'],
-    size = json['size'],
-    type = json['type'],
-    material = json['material'],
-    length = json['length'],
-    categories = json['categories'];
-    // category = (json['category'] as List).map((e) => CategoryModel.fromJson(e)).toList();
+    category = json['category'],
+    productID = json['product_id'],
+    description = json['description'];
 
 
   ProductModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot):
@@ -54,13 +44,10 @@ class ProductModel {
     unit = snapshot['unit'],
     unitSold = snapshot['unit_sold'],
     unitAvailable = snapshot['unit_available'],
-    shape = snapshot['shape'],
-    size = snapshot['size'],
-    type = snapshot['type'],
-    material = snapshot['material'],
-    length = snapshot['length'],
-    categories = snapshot['categories'];
-    // category = (snapshot['category'] as List).map((e) => CategoryModel.fromJson(e)).toList();
+    category = snapshot['category'],
+    productID = snapshot['product_id'],
+    description = snapshot['description'];
+
 
 
 
@@ -74,12 +61,10 @@ class ProductModel {
     data['unit'] = this.unit;
     data['unit_sold'] = this.unitSold;
     data['unit_available'] = this.unitAvailable;
-    data['shape'] = this.shape;
-    data['size'] = this.size;
-    data['type'] = this.type;
-    data['material'] = this.material;
-    data['length'] = this.length;
-    data['categories'] = this.categories;
+    data['category'] = this.category;
+    data['product_id'] = this.productID;
+    data['description'] = this.description;
+
 
     return data;
   }

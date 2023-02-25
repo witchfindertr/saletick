@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/controllers/product_controller.dart';
+import 'package:saletick/custom_widgets/header/header_one_widget.dart';
+import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/custom_widgets/buttons/main_button.dart';
 import 'package:saletick/custom_widgets/inputs/input_field_plus_text.dart';
-import 'package:saletick/custom_widgets/texts/text_n_divider_header.dart';
 import 'package:saletick/models/product_model.dart';
 import 'package:saletick/utilities/feedback.dart';
 
 
-import '../../custom_widgets/header/header_widget.dart';
 
 class ReStockProductScreen extends StatefulWidget {
   final ProductModel product;
@@ -39,8 +38,8 @@ class _ReStockProductScreenState extends State<ReStockProductScreen> {
         child: Column(
           children: [
             // header
-            const HeaderWidget(),
-            const TextnDividerHeader(text: 'Restock Product', wantDivider: false),
+           const SaletickHeaderOne(headerOneTitleText: 'Restock Product'),
+           SizedBox(height: Dimensions.size40),
             // The form Section
             Padding(
               padding: EdgeInsets.symmetric(horizontal: Dimensions.size10),
@@ -63,6 +62,7 @@ class _ReStockProductScreenState extends State<ReStockProductScreen> {
                                     text: '', 
                                     textController: TextEditingController(),
                                     myHintText: widget.product.name.toUpperCase(), // product name
+                                    customTextInputAction: TextInputAction.next,
                                   ),
                                 ),
                               ),
@@ -78,7 +78,8 @@ class _ReStockProductScreenState extends State<ReStockProductScreen> {
                                   child: InputFieldPlusTextWidget(
                                     text: 'Quantity To Be Added', 
                                     textController: restockUnitController, 
-                                    isItForNumber: true,                                        
+                                    isItForNumber: true,  
+                                    customTextInputAction: TextInputAction.done,                                      
                                   ),
                                 ),
                               ),                                 

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/controllers/auth_controller.dart';
 import 'package:saletick/controllers/product_controller.dart';
+import 'package:saletick/custom_widgets/header/header_one_widget.dart';
+import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/custom_widgets/buttons/main_button.dart';
-import 'package:saletick/custom_widgets/header/header_widget.dart';
 import 'package:saletick/custom_widgets/inputs/input_field_plus_text.dart';
-import 'package:saletick/custom_widgets/texts/text_n_divider_header.dart';
 import 'package:saletick/models/product_model.dart';
 import 'package:saletick/utilities/feedback.dart';
 
@@ -46,8 +45,8 @@ class _SellAProductScreenState extends State<SellAProductScreen> {
         child: Column(
           children: [
             // header
-            const HeaderWidget(),
-            const TextnDividerHeader(text: 'Sell A Product', wantDivider: false),
+            const SaletickHeaderOne(headerOneTitleText: 'Sell A Product'),
+            SizedBox(height: Dimensions.size50),
             // The form Section
             Padding(
               padding: EdgeInsets.symmetric(horizontal: Dimensions.size10),
@@ -71,6 +70,7 @@ class _SellAProductScreenState extends State<SellAProductScreen> {
                                         text: '', 
                                         textController: TextEditingController(),
                                         myHintText: widget.product.name.toUpperCase(), // product name
+                                        customTextInputAction: TextInputAction.done,
                                       ),
                                     ),
                                   ),
@@ -87,10 +87,11 @@ class _SellAProductScreenState extends State<SellAProductScreen> {
                                         text: 'Unit', 
                                         textController: unitSoldController, 
                                         isItForNumber: true,
+                                        customTextInputAction: TextInputAction.done,
                                         onChanged: (value) {
                                             print('I just changed: $value');// testing  
-                                            // Calling the updateSellVariables fro productController                                                                                                                       
-                                            productController.updateProductSellVariables(double.parse(unitSoldController.text.trim()), double.parse(widget.product.amount)); // amount from productModel                              
+                                            // Calling the updateSaleVariables from productController. Date & Time plus amount, is updated                                                                                                                     
+                                            productController.updateProductSaleVariables(double.parse(unitSoldController.text.trim()), double.parse(widget.product.amount)); // amount from productModel                              
                                         },
                                       ),
                                     ),
@@ -102,14 +103,15 @@ class _SellAProductScreenState extends State<SellAProductScreen> {
                                       child: InputFieldPlusTextWidget(
                                         text: 'Total Amount', 
                                         textController: TextEditingController(),
-                                        myHintText: productController.sellProductTotalAmount.toString(),
+                                        customTextInputAction: TextInputAction.done,
+                                        myHintText: productController.sellProductTotalAmount.toString(), // freq. updated amount based on no. of units added
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                               SizedBox(height: Dimensions.size15),
-                              // Current Date & Time from our Product Controller using DateTime
+                              // Current Date & Time from our Product Controller using DateTime.
                               Row(
                                 children: [
                                     Expanded(
@@ -117,7 +119,8 @@ class _SellAProductScreenState extends State<SellAProductScreen> {
                                       child: InputFieldPlusTextWidget(
                                         text: 'Time', 
                                         textController: TextEditingController(), 
-                                        myHintText: productController.myTime.value,
+                                        customTextInputAction: TextInputAction.next,
+                                        myHintText: productController.myTime.value, // freq. updated time
                                       ),
                                     ),
                                   ),
@@ -128,7 +131,8 @@ class _SellAProductScreenState extends State<SellAProductScreen> {
                                       child: InputFieldPlusTextWidget(
                                         text: 'Date', 
                                         textController: TextEditingController(),
-                                        myHintText: productController.myDate.value,
+                                        customTextInputAction: TextInputAction.next,
+                                        myHintText: productController.myDate.value, // freq. updated date
                                       ),
                                     ),
                                   ),
@@ -143,7 +147,8 @@ class _SellAProductScreenState extends State<SellAProductScreen> {
                                       key: soldToFormKey,
                                       child: InputFieldPlusTextWidget(
                                         text: 'Sold To', 
-                                        textController: soldToWhoController,                                         
+                                        textController: soldToWhoController,     
+                                        customTextInputAction: TextInputAction.done,                                    
                                       ),
                                     ),
                                   ),                        
@@ -158,6 +163,7 @@ class _SellAProductScreenState extends State<SellAProductScreen> {
                                       child: InputFieldPlusTextWidget(
                                         text: 'Sold By', 
                                         textController: TextEditingController(),
+                                        customTextInputAction: TextInputAction.done,
                                         myHintText: authController.getCurrentUser()!.email,
                                       ),
                                     ),

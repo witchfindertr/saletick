@@ -9,6 +9,8 @@ class AppColors {
   static const  Color mainTextColor3 = Color(0xFFC373EC);
   static const  Color inputFillColor = Color(0x428f7aff);
   static const  Color bottomNavInactive = Color(0xff8f8f8f);
+  static const  Color saletickGreen= Color(0xFF03C881);
+  static const  Color saletickScaffoldColor= Color(0xFFF7F7F7);
 
 
   

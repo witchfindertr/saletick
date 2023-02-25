@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
-import 'package:saletick/screens/auth_screens/login.dart';
+import 'package:saletick/controllers/chart_controller.dart';
 import 'package:saletick/screens/auth_screens/register_screen.dart';
-import 'package:saletick/screens/home/tarnor_home.dart';
+import 'package:saletick/screens/auth_screens/sign_in_screen.dart';
+import 'package:saletick/screens/dashboard/admin_sales_summary.dart';
+import 'package:saletick/screens/home/inventory_category_list.dart';
 import 'package:saletick/screens/intro/intro_screen.dart';
 import 'package:saletick/screens/intro/splash_screen.dart';
 import 'package:saletick/screens/products/add_new_product.dart';
@@ -13,8 +15,7 @@ class Routes {
     // splash screen
     GetPage(
       name: '/',
-      page: () => const SplashScreen(),
-      transition: Transition.fadeIn,      
+      page: () => const SplashScreen(),     
     ),
     // Get started screen
     GetPage(
@@ -25,27 +26,30 @@ class Routes {
     ),
     // Home screen
     GetPage(
-      name: TanorHomeScreen.routeName,
-      page: () => const TanorHomeScreen(),
-      transition: Transition.fadeIn,      
+      name: InventoryCategoryListScreen.routeName,
+      page: () => InventoryCategoryListScreen(),
+      transition: Transition.circularReveal,   
+      transitionDuration: const Duration(seconds: 2),   
+      binding: BindingsBuilder.put(() => ChartController()) 
     ),
-    // login screen
+    // signin screen
     GetPage(
-      name: LoginScreen.routeName,
-      page: () => const LoginScreen(),
+      name: SignInScreen.routeName,
+      page: () => SignInScreen(),
       transition: Transition.fade,      
     ),
     // register screen
     GetPage(
       name: RegisterScreen.routeName,
-      page: () => RegisterScreen(),
+      page: () => const RegisterScreen(),
       transition: Transition.fade,      
     ),
     // Create A New Product
     GetPage(
-      name: AddNewProductScreen.routeName,
-      page: () => const AddNewProductScreen(),
-      transition: Transition.fade,      
+      name: AdminSalesSummaryScreen.routeName,
+      page: () => const AdminSalesSummaryScreen(),
+      transition: Transition.fade,  
+      binding: BindingsBuilder.put(() => ChartController())
     ),
   ];
 }

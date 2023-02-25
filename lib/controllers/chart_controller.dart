@@ -4,7 +4,7 @@ import 'package:money_formatter/money_formatter.dart';
 import 'package:saletick/controllers/auth_controller.dart';
 import 'package:saletick/controllers/product_controller.dart';
 import 'package:saletick/models/chart_model.dart';
-import 'package:saletick/models/sales_model.dart';
+import 'package:saletick/models/transaction_model.dart';
 
 
 class ChartController extends GetxController {
@@ -16,10 +16,10 @@ class ChartController extends GetxController {
   ProductController _productController = Get.find<ProductController>();
 
   // filtered list of sales
-  final dailySalesList = <SalesModel>[].obs;
-  final weeklySalesList = <SalesModel>[].obs;
-  final monthlySalesList = <SalesModel>[].obs;
-  final yearlySalesList = <SalesModel>[].obs;
+  final dailySalesList = <TransactionModel>[].obs;
+  final weeklySalesList = <TransactionModel>[].obs;
+  final monthlySalesList = <TransactionModel>[].obs;
+  final yearlySalesList = <TransactionModel>[].obs;
 
   // today's total amount
   final todaysTotalAmount = ''.obs;

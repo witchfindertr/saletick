@@ -11,7 +11,7 @@ final userFirestoreReference = fireStore.collection('users');
 final productFirestoreReference = fireStore.collection('products');
 
 // sales collection reference
-final salesFirestoreReference = fireStore.collection('sales');
+final transactionsFirestoreReference = fireStore.collection('transactions');
 
 
 // Firebase Storage Ref

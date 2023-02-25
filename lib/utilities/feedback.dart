@@ -27,7 +27,7 @@ class UserFeedBack {
 
 
   // A function which shows success dialog
-  static void showSuccess({required String infoMessage, required String buttonText, required VoidCallback onTap}){
+  static void showSuccess({required String infoMessage, required String buttonText}){
     showDialog(
       context: Get.context!, 
       barrierDismissible: false,
@@ -79,7 +79,7 @@ class UserFeedBack {
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: Dimensions.size20),
                           child: MainButton(
-                            onPressed: onTap, 
+                            onPressed: (){}, 
                             text: buttonText, //'+ Create Category',
                             height: Dimensions.size40,
                             isTripleGradient: true,

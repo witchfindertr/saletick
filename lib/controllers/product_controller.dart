@@ -3,8 +3,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:money_formatter/money_formatter.dart';
 import 'package:saletick/controllers/auth_controller.dart';
+import 'package:saletick/models/product_category_model.dart';
 import 'package:saletick/models/product_model.dart';
-import 'package:saletick/models/sales_model.dart';
+import 'package:saletick/models/transaction_model.dart';
 import 'package:saletick/utilities/feedback.dart';
 import 'package:saletick/utilities/firebase_references.dart';
 import 'package:saletick/utilities/logger.dart';
@@ -12,9 +13,13 @@ import 'package:saletick/utilities/logger.dart';
 
 class ProductController extends GetxController{
 
-  final allProductsList = <ProductModel>[].obs;
-  final allSalesDataList = <SalesModel>[].obs;
-  final currentUserSalesList = <SalesModel>[].obs;
+  // final allProductsList = <ProductModel>[].obs;
+  final allProductsCategoryList = <ProductCategoryModel>[].obs;
+  final allTransactionsDataList = <TransactionModel>[].obs;
+  final allExpensesDataList = <TransactionModel>[].obs;
+  final allSalesDataList = <TransactionModel>[].obs;
+
+  // final currentUserSalesList = <SalesModel>[].obs;
 
 
   // For sell of product
@@ -24,13 +29,6 @@ class ProductController extends GetxController{
 
   // instance of auth controller
   AuthController _authController = Get.find<AuthController>();
-  
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
 
 
 
@@ -42,13 +40,60 @@ class ProductController extends GetxController{
       if(isAdmin){
         QuerySnapshot<Map<String, dynamic>> productData = await productFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('PRODUCTS').get();
         var products = productData.docs.map((e) => ProductModel.fromSnapshot(e)).toList();
-        allProductsList.assignAll(products);
-        print('PRODUCTS GOTTEN  (success) $allProductsList');
+        
+
+        // Setting the products categories list to empty before adding new items
+        allProductsCategoryList.value = [];
+        // A set object for categories
+        Set<String> distinctCategories = {};
+        
+        // Creating a distinct set of category names by looping through the products
+        for(var p in products){
+          distinctCategories.add(p.category);
+        }
+
+        // Using loop to assign a particular categoryName the products associated with it.
+        // For each item in the distinctCategories Set, find products associated with it and make a list out of them
+        for(var cat in distinctCategories){
+          var categoryName = cat;
+          List<ProductModel> productsList = [];
+
+          for(var p in products){
+            if(p.category == cat){
+             productsList.add(p);
+            }
+          }
+
+          allProductsCategoryList.add(ProductCategoryModel(category: categoryName, products: productsList));
+          print('PRODUCTS--category--GOTTEN et ADMIN  (success) $allProductsCategoryList');
+        }
       }else{
         QuerySnapshot<Map<String, dynamic>> productData = await productFirestoreReference.doc(_authController.currentUserData.myAdminEmailAddress).collection('PRODUCTS').get();
         var products = productData.docs.map((e) => ProductModel.fromSnapshot(e)).toList();
-        allProductsList.assignAll(products);
-        print('PRODUCTS GOTTEN  (success) $allProductsList');
+
+       // Setting the products categories list to empty before adding new items
+        allProductsCategoryList.value = [];
+        // A set object for categories
+        Set<String> distinctCategories = {};
+        
+        // Creating a distinct set of category names by looping through the products
+        for(var p in products){
+          distinctCategories.add(p.category);
+        }
+
+        // Using loop to assign a particular categoryName the products associated with it.
+        // For each item in the distinctCategories Set, find products associated with it and make a list out of them
+        for(var cat in distinctCategories){
+          var categoryName = cat;
+          List<ProductModel> productsList = [];
+
+          for(var p in products){
+            if(p.category == cat){
+             productsList.add(p);
+            }
+          }
+        }
+
       }
      
       
@@ -69,9 +114,10 @@ class ProductController extends GetxController{
       await Future.delayed(const Duration(seconds: 1));
       // Getting all products from the DB
       getAllProducts(true);
-      // UserFeedBack.showSuccess('Product has been added successfully !');
+      Get.back(); // stopping the loading
+      UserFeedBack.showSuccess(infoMessage: '${product.name} has been added to your inventory', buttonText: 'Completed');
       // delay and go to home
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
       _authController.goToHomeScreen();
     }catch (e){
       AppLogger.e(e);
@@ -91,32 +137,34 @@ class ProductController extends GetxController{
     try{
       UserFeedBack.showLoading();
       // Creating an object of the Sales Model
-      SalesModel salesModel = SalesModel(
+      TransactionModel txnModel = TransactionModel(
         product: productModel.toJson(), 
         whoSoldIt: _authController.getCurrentUser()!.email!, 
         unitSold: unitSold, 
         totalAmount: sellProductTotalAmount.value.toString(), 
         productName: productModel.name,
+        expensesName: "",
         time: myTime.value, 
         date: myDate.value,
         dateCreated: currentDateTime,
-        soldTo: soldTo
+        soldTo: soldTo,
+        isExpenses: false,
       );
 
       // Save sales info to the general sales collection in the DB
       if(isAdmin){
         //for admin
-        await salesFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('SALES').doc("$productName : $currentDateTime").set(salesModel.toJson());
+        await transactionsFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('TRANSACTIONS').doc("$productName : $currentDateTime").set(txnModel.toJson());
       }else{
         // for staff
-        await salesFirestoreReference.doc(adminEmail).collection('SALES').doc("$productName : $currentDateTime").set(salesModel.toJson());
+        await transactionsFirestoreReference.doc(adminEmail).collection('TRANSACTIONS').doc("$productName : $currentDateTime").set(txnModel.toJson());
       }
       
       // little delay before the next operation
       await Future.delayed(const Duration(seconds: 1));
 
       // Save current user's sales to the user data in the DB
-      await userFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('mySales').doc("$productName : $currentDateTime").set(salesModel.toJson());
+      await userFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('myTransactions').doc("$productName : $currentDateTime").set(txnModel.toJson());
     
       // Update the units(quantity) of the product: checks wether user is an admin before processing . . .
       isAdmin? updateUnitsOfProducts(productModel, unitSold, true) : updateUnitsOfProducts(productModel, unitSold, false);
@@ -133,12 +181,12 @@ class ProductController extends GetxController{
       
       // little delay before getting sales Data
       await Future.delayed(const Duration(seconds: 1));
-      // Getting sales data: checks if user is an Admin before continuing
-      isAdmin? getAllSalesData(true) : getAllSalesData(false);
-
-      // UserFeedBack.showSuccess('Product has been added to sales !');
+      // Getting transactions data: checks if user is an Admin before continuing
+      isAdmin? getAllTransactionsData(true) : getAllTransactionsData(false);
+      Get.back(); // stop loading
+      UserFeedBack.showSuccess(infoMessage: 'Product has been added to sales !', buttonText: 'Success');
       // delay and go to home
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
       _authController.goToHomeScreen();
     }catch (e){
       AppLogger.e(e);
@@ -152,7 +200,7 @@ class ProductController extends GetxController{
 
 
   // A function which updates key variables during sell of a product
-  void updateProductSellVariables(double unit, double amount){
+  void updateProductSaleVariables(double unit, double amount){
 
     myDate.value = DateFormat('yMd').format(DateTime.now());
     myTime.value = DateFormat.jm().format(DateTime.now());
@@ -196,18 +244,43 @@ class ProductController extends GetxController{
 
 
   // A function which gets all the sales made
-  void getAllSalesData(bool isAdmin) async {
+  void getAllTransactionsData(bool isAdmin) async {
     try{
       if(isAdmin){
-        QuerySnapshot<Map<String, dynamic>> salesData = await salesFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('SALES').get();
-        var sales = salesData.docs.map((e) => SalesModel.fromSnapshot(e)).toList();
-        allSalesDataList.assignAll(sales);
-        print('SALES ADMIN GOTTEN  (success) $allSalesDataList');
+        QuerySnapshot<Map<String, dynamic>> txnData = await transactionsFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('TRANSACTIONS').get();
+        var transactions = txnData.docs.map((e) => TransactionModel.fromSnapshot(e)).toList();
+        allTransactionsDataList.assignAll(transactions);
+
+        // Emptying the lists incase there are any contents . . .
+        allSalesDataList.value = [];
+        allExpensesDataList.value = [];
+
+        // Looping through transactions LIST to separate sales and expenses
+        for(var txn in transactions){
+          if(txn.isExpenses){
+            allExpensesDataList.add(txn);
+          }else{
+            allSalesDataList.add(txn);
+          }
+        }
+        print('ALL TXN GOTTEN by ADMIN  (success) $allTransactionsDataList');
       }else{
-        QuerySnapshot<Map<String, dynamic>> salesData = await salesFirestoreReference.doc(_authController.currentUserData.myAdminEmailAddress).collection('SALES').get();
-        var sales = salesData.docs.map((e) => SalesModel.fromSnapshot(e)).toList();
-        allSalesDataList.assignAll(sales);
-        print('SALES STAFF GOTTEN  (success) $allSalesDataList');  
+        QuerySnapshot<Map<String, dynamic>> txnData = await transactionsFirestoreReference.doc(_authController.currentUserData.myAdminEmailAddress).collection('TRANSACTIONS').get();
+        var transactions = txnData.docs.map((e) => TransactionModel.fromSnapshot(e)).toList();
+
+        // Emptying the lists incase there are any contents . . .
+        allSalesDataList.value = [];
+        allExpensesDataList.value = [];
+
+        // Looping through transactions LIST to separate sales and expenses
+        for(var txn in transactions){
+          if(txn.isExpenses){
+            allExpensesDataList.add(txn);
+          }else{
+            allSalesDataList.add(txn);
+          }
+        }
+        print('ALL TXN GOTTEN by STAFF  (success) $allTransactionsDataList');  
       }
       
     }catch (e){
@@ -237,11 +310,11 @@ class ProductController extends GetxController{
       
       // fetch all products data
       getAllProducts(true);
-
-      // UserFeedBack.showSuccess('Product successfully restocked !');
+      Get.back(); // stop loading
+      UserFeedBack.showSuccess(infoMessage: 'Product successfully restocked !', buttonText: 'Done');
       // delay and go to home
 
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
       _authController.goToHomeScreen();
 
     }catch (e){
@@ -256,7 +329,7 @@ class ProductController extends GetxController{
 
 
 // Processing the product inside the staff sales model
-ProductModel processSpecificProductsSold(SalesModel mySale) {
+ProductModel processSpecificProductsSold(TransactionModel mySale) {
   // Serializing the product data in staff's specific sales
   // first: converting it from Map<dynamic, dynamic> to Map<String, dynamic>
   Map<String, dynamic> renewedMap = {};
@@ -307,6 +380,70 @@ String totalCashgeneratedByProductToday(ProductModel productModel){
 
   return formattedCalculatedAmount;
 }
+
+
+
+
+
+
+  // A helps a user add expenses when called: to make an expenses
+  Future<void> addExpensesToRecords({required String expensesName, required String amountSpent, required bool isAdmin, required String adminEmail}) async {
+    DateTime currentDateTime = DateTime.now();
+
+    try{
+      UserFeedBack.showLoading();
+      // Creating an object of the Transaction Model
+      TransactionModel txnModel = TransactionModel(
+        product: {}, 
+        whoSoldIt: "", 
+        unitSold: 0, 
+        totalAmount: amountSpent, 
+        productName: "",
+        expensesName: expensesName,
+        time: "", 
+        date: "",
+        dateCreated: currentDateTime,
+        soldTo: "",
+        isExpenses: true,
+      );
+
+      // Save sales info to the general sales collection in the DB
+      if(isAdmin){
+        //for admin
+        await transactionsFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('TRANSACTIONS').doc("$expensesName : $currentDateTime").set(txnModel.toJson());
+      }else{
+        // for staff
+        await transactionsFirestoreReference.doc(adminEmail).collection('TRANSACTIONS').doc("$expensesName : $currentDateTime").set(txnModel.toJson());
+      }
+      
+      // little delay before the next operation
+      await Future.delayed(const Duration(seconds: 1));
+      // Save current user's sales to the user data in the DB
+      await userFirestoreReference.doc(_authController.getCurrentUser()!.email).collection('myTransactions').doc("$expensesName : $currentDateTime").set(txnModel.toJson());
+      // little delay before getting updated products from our DB
+      await Future.delayed(const Duration(seconds: 1));
+
+      // fetch all sales & expenses data (i.e transactions)
+      if(isAdmin){
+        getAllTransactionsData(true);
+      }else{
+        getAllTransactionsData(false);
+      }
+      
+      // little delay before getting sales Data
+      await Future.delayed(const Duration(seconds: 1));
+ 
+      Get.back(); // stop loading
+      UserFeedBack.showSuccess(infoMessage: 'You have added this expenses to the records !', buttonText: 'Success');
+      // delay and go to home
+      await Future.delayed(const Duration(seconds: 2));
+      _authController.goToHomeScreen();
+    }catch (e){
+      AppLogger.e(e);
+      Get.back();
+      UserFeedBack.showError('Failed to add expenses to the records. Try Again !');
+    }
+  }
 
 
 

@@ -16,7 +16,7 @@ class SaletickBackButton extends StatelessWidget {
           // icon
           Icon(
             Icons.arrow_left,
-            color: AppColors.mainColor,
+            color: AppColors.mainColor2,
             size: Dimensions.size30,
           ),
           // back text

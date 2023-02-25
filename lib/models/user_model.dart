@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:saletick/models/sales_model.dart';
+import 'package:saletick/models/transaction_model.dart';
 
 
 class UserModel {
@@ -12,7 +12,11 @@ class UserModel {
   String dateEmployed;
   String imageUrl;
   String myAdminEmailAddress;
-  List<SalesModel> mySales;
+  String address;
+  String qualification;
+  String salary;
+  List<TransactionModel> mySales;
+  List<TransactionModel> myExpenses;
 
   UserModel({
     required this.firstName,
@@ -24,7 +28,11 @@ class UserModel {
     required this.dateEmployed,
     required this.imageUrl,
     required this.myAdminEmailAddress,
+    required this.address,
+    required this.qualification,
+    required this.salary,
     required this.mySales,
+    required this.myExpenses,
   });
 
 
@@ -38,7 +46,11 @@ class UserModel {
     dateEmployed = snapshot['date_employed'],
     imageUrl = snapshot['image_url'],
     myAdminEmailAddress = snapshot['my_admin_email'],
-    mySales = snapshot['my_sales'] == null? [] : (snapshot['my_sales'] as List).map((e) => SalesModel.fromJson(e as Map<String, dynamic>)).toList();
+    address = snapshot['address'],
+    qualification = snapshot['qualification'],
+    salary = snapshot['salary'],
+    mySales = snapshot['my_sales'] == null? [] : (snapshot['my_sales'] as List).map((e) => TransactionModel.fromJson(e as Map<String, dynamic>)).toList(),
+    myExpenses = snapshot['my_expenses'] == null? [] : (snapshot['my_expenses'] as List).map((e) => TransactionModel.fromJson(e as Map<String, dynamic>)).toList();
 
 
 
@@ -52,7 +64,11 @@ class UserModel {
     dateEmployed = json['date_employed'],
     imageUrl = json['image_url'],
     myAdminEmailAddress = json['my_admin_email'],
-    mySales = json['my_sales'] == null? [] : (json['my_sales'] as List).map((e) => SalesModel.fromJson(e as Map<String, dynamic>)).toList();
+    address = json['address'],
+    qualification = json['qualification'],
+    salary = json['salary'],
+    mySales = json['my_sales'] == null? [] : (json['my_sales'] as List).map((e) => TransactionModel.fromJson(e as Map<String, dynamic>)).toList(),
+    myExpenses = json['my_expenses'] == null? [] : (json['my_expenses'] as List).map((e) => TransactionModel.fromJson(e as Map<String, dynamic>)).toList();
 
 
   
@@ -68,7 +84,11 @@ class UserModel {
     data['date_employed'] = this.dateEmployed;
     data['image_url'] = this.imageUrl;
     data['my_admin_email'] = this.myAdminEmailAddress;
+    data['address'] = this.address;
+    data['qualification'] = this.qualification;
+    data['salary'] = this.salary;
     data['my_sales'] = this.mySales;
+    data['my_expenses'] = this.myExpenses;
 
     return data;
   }

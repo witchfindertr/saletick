@@ -4,10 +4,7 @@ import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/controllers/product_controller.dart';
 import 'package:saletick/custom_widgets/buttons/main_button.dart';
 import 'package:saletick/custom_widgets/header/header_widget.dart';
-import 'package:saletick/custom_widgets/inputs/input_field_plus_text.dart';
-import 'package:saletick/custom_widgets/texts/text_n_divider_header.dart';
-import 'package:saletick/models/product_model.dart';
-import 'package:saletick/utilities/feedback.dart';
+
 
 
 class AddNewProductScreen extends StatefulWidget {
@@ -48,7 +45,7 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
           children: [
             // header
             const HeaderWidget(),
-            const TextnDividerHeader(text: 'Add New Product', wantDivider: false),
+            // const TextnDividerHeader(text: 'Add New Product', wantDivider: false),
             // The form Section
             Padding(
               padding: EdgeInsets.symmetric(horizontal: Dimensions.size10),
@@ -60,74 +57,74 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                   padding: EdgeInsets.symmetric(horizontal: Dimensions.size5, vertical: Dimensions.size20),
                   child: Column(
                     children: [
-                      Form(
-                        key: createProductFormKey,
-                        child: Column(
-                          children: [
-                            // productName & Amount,  
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: InputFieldPlusTextWidget(text: 'Product Name', textController: productNameController),
-                                ),
-                                Expanded(
-                                  child: InputFieldPlusTextWidget(text: 'Amount', textController: amountController),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: Dimensions.size15),
-                            // CATEGORIES & SELECT COLOR
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: InputFieldPlusTextWidget(text: 'Categories', textController: categoryController),
-                                ),
-                                SizedBox(width: Dimensions.size10),
-                                // SELECT COLOR
-                                Expanded(
-                                  child: InputFieldPlusTextWidget(text: 'Colors', textController: colorController),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: Dimensions.size15),
-                            // Unit & Shape 
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: InputFieldPlusTextWidget(text: 'Unit', textController: unitController, isItForNumber: true),
-                                ),
-                                Expanded(
-                                  child: InputFieldPlusTextWidget(text: 'Shape', textController: shapeController),
-                                ),
-                              ],
-                            ),            
-                            SizedBox(height: Dimensions.size15),            
-                            // Size & Type
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: InputFieldPlusTextWidget(text: 'Size', textController: sizeController),
-                                ),
-                                Expanded(
-                                  child: InputFieldPlusTextWidget(text: 'Type', textController: typeController),
-                                ),
-                              ],
-                            ), 
-                            SizedBox(height: Dimensions.size15),             
-                            // Material & Length
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: InputFieldPlusTextWidget(text: 'Material', textController: materialController),
-                                ),
-                                Expanded(
-                                  child: InputFieldPlusTextWidget(text: 'Length', textController: lengthController),
-                                ),
-                              ],
-                            ),                                    
-                          ],
-                        ),
-                      ),
+                      // Form(
+                      //   key: createProductFormKey,
+                      //   child: Column(
+                      //     children: [
+                      //       // productName & Amount,  
+                      //       Row(
+                      //         children: [
+                      //           Expanded(
+                      //             child: InputFieldPlusTextWidget(text: 'Product Name', textController: productNameController),
+                      //           ),
+                      //           Expanded(
+                      //             child: InputFieldPlusTextWidget(text: 'Amount', textController: amountController),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //       SizedBox(height: Dimensions.size15),
+                      //       // CATEGORIES & SELECT COLOR
+                      //       Row(
+                      //         children: [
+                      //           Expanded(
+                      //             child: InputFieldPlusTextWidget(text: 'Categories', textController: categoryController),
+                      //           ),
+                      //           SizedBox(width: Dimensions.size10),
+                      //           // SELECT COLOR
+                      //           Expanded(
+                      //             child: InputFieldPlusTextWidget(text: 'Colors', textController: colorController),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //       SizedBox(height: Dimensions.size15),
+                      //       // Unit & Shape 
+                      //       Row(
+                      //         children: [
+                      //           Expanded(
+                      //             child: InputFieldPlusTextWidget(text: 'Unit', textController: unitController, isItForNumber: true),
+                      //           ),
+                      //           Expanded(
+                      //             child: InputFieldPlusTextWidget(text: 'Shape', textController: shapeController),
+                      //           ),
+                      //         ],
+                      //       ),            
+                      //       SizedBox(height: Dimensions.size15),            
+                      //       // Size & Type
+                      //       Row(
+                      //         children: [
+                      //           Expanded(
+                      //             child: InputFieldPlusTextWidget(text: 'Size', textController: sizeController),
+                      //           ),
+                      //           Expanded(
+                      //             child: InputFieldPlusTextWidget(text: 'Type', textController: typeController),
+                      //           ),
+                      //         ],
+                      //       ), 
+                      //       SizedBox(height: Dimensions.size15),             
+                      //       // Material & Length
+                      //       Row(
+                      //         children: [
+                      //           Expanded(
+                      //             child: InputFieldPlusTextWidget(text: 'Material', textController: materialController),
+                      //           ),
+                      //           Expanded(
+                      //             child: InputFieldPlusTextWidget(text: 'Length', textController: lengthController),
+                      //           ),
+                      //         ],
+                      //       ),                                    
+                      //     ],
+                      //   ),
+                      // ),
                       SizedBox(height: Dimensions.size25),
                       // The ADD button Here 
                       MainButton(
@@ -141,30 +138,30 @@ class _AddNewProductScreenState extends State<AddNewProductScreen> {
                             var productColorList = colorController.text.trim().split(' ');
 
                             // An instance of product model
-                            ProductModel productModel = ProductModel(
-                              name: productNameController.text.trim(), 
-                              amount: amountController.text.trim(), 
-                              colors: productColorList, 
-                              unit: int.parse(unitController.text.trim()),
-                              unitSold: 0,
-                              unitAvailable: int.parse(unitController.text.trim()),
-                              shape: shapeController.text.trim(), 
-                              size: sizeController.text.trim(),
-                              type: typeController.text.trim(),
-                              material: materialController.text.trim(),
-                              length: lengthController.text.trim(), 
-                              categories: categoryList
-                            ); 
+                            // ProductModel productModel = ProductModel(
+                            //   name: productNameController.text.trim(), 
+                            //   amount: amountController.text.trim(), 
+                            //   colors: productColorList, 
+                            //   unit: int.parse(unitController.text.trim()),
+                            //   unitSold: 0,
+                            //   unitAvailable: int.parse(unitController.text.trim()),
+                            //   shape: shapeController.text.trim(), 
+                            //   size: sizeController.text.trim(),
+                            //   type: typeController.text.trim(),
+                            //   material: materialController.text.trim(),
+                            //   length: lengthController.text.trim(), 
+                            //   categories: categoryList
+                            // ); 
 
                             // getting confirmation from the user
-                            UserFeedBack.showConfirmation(
-                              onConfirm: (){
-                                // Calling our create function here (from productController)
-                                Get.back();
-                                productController.createProductItem(productModel);
-                              }, 
-                              confirmQuestion: 'Add a new product to your inventory?'
-                            );
+                            // UserFeedBack.showConfirmation(
+                            //   onConfirm: (){
+                            //     // Calling our create function here (from productController)
+                            //     Get.back();
+                            //     productController.createProductItem(productModel);
+                            //   }, 
+                            //   confirmQuestion: 'Add a new product to your inventory?'
+                            // );
 
                             
                           }                                                       

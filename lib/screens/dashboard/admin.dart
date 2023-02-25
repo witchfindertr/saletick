@@ -11,9 +11,8 @@ import 'package:saletick/custom_widgets/header/header_widget.dart';
 import 'package:saletick/custom_widgets/lists/chart_filter_card.dart';
 import 'package:saletick/custom_widgets/lists/product_item_widget.dart';
 import 'package:saletick/models/chart_model.dart';
-import 'package:saletick/models/sales_model.dart';
+import 'package:saletick/models/transaction_model.dart';
 import 'package:saletick/screens/dashboard/admin_total_income.dart';
-import 'package:saletick/screens/dashboard/sold_product_info.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 
@@ -43,7 +42,7 @@ class _AdminScreenState extends State<AdminScreen> {
   String currentSort = 'Today';
 
   // The dynamic salesList which changes based on sort
-  final sortedSalesList = <SalesModel>[].obs;
+  final sortedSalesList = <TransactionModel>[].obs;
 
   @override
   void initState() {
@@ -306,7 +305,7 @@ class _AdminScreenState extends State<AdminScreen> {
 
                         return InkWell(
                           onTap: (() {
-                             Get.to(SoldProductInfoScreen(soldProduct: productSold));
+                            //  Get.to(SoldProductInfoScreen(soldProduct: productSold));
                           }),
                           child: ProductItemWidget(
                             productName: productSold.productName, // name

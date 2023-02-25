@@ -28,8 +28,9 @@ class InventoryDetailTextWidget extends StatelessWidget {
           // value
           Text(
             valueText!,
+            textAlign: TextAlign.center,
             style: GoogleFonts.montserrat(
-              fontWeight: FontWeight.w600, 
+              fontWeight: FontWeight.w500, 
               color: AppColors.mainTextColor3.withOpacity(0.7),
               fontSize: Dimensions.size15,
             ),

@@ -4,7 +4,7 @@ import 'package:saletick/app_constants/app_colors.dart';
 import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/app_constants/custom_text_styles.dart';
 import 'package:saletick/controllers/auth_controller.dart';
-import 'package:saletick/screens/dashboard/see_my_sales_screen.dart';
+import 'package:saletick/screens/transactions/see_my_sales_screen.dart';
 
 
 

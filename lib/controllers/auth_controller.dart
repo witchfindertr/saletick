@@ -7,14 +7,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:saletick/models/sales_model.dart';
+import 'package:saletick/models/transaction_model.dart';
 import 'package:saletick/models/user_model.dart';
-import 'package:saletick/screens/auth_screens/login.dart';
-import 'package:saletick/screens/home/tarnor_home.dart';
+import 'package:saletick/screens/home/inventory_category_list.dart';
 import 'package:saletick/screens/intro/intro_screen.dart';
 import 'package:saletick/utilities/feedback.dart';
 import 'package:saletick/utilities/firebase_references.dart';
 import 'package:saletick/utilities/logger.dart';
+import 'package:saletick/screens/auth_screens/sign_in_screen.dart';
 
 
 class AuthController extends GetxController {
@@ -26,14 +26,15 @@ class AuthController extends GetxController {
 
   // users data list
   final allUsersDataList = <UserModel>[].obs;
-  // Current user's Sales
-  final userSalesList = <SalesModel>[].obs;
+
+  // Current user's Transactions
+  final userTransactionList = <TransactionModel>[].obs;
 
   // currentlyLoggedInUser details
   late UserModel currentUserData;
 
   // user's profile image
-  final usersProfileImage = ''.obs;
+  final usersProfileImage = "".obs;
 
   // fetch data checker
   final isLoading = false.obs;
@@ -73,12 +74,12 @@ class AuthController extends GetxController {
 
 
   void goToHomeScreen(){
-    Get.offAllNamed(TanorHomeScreen.routeName);
+    Get.offAllNamed(InventoryCategoryListScreen.routeName);
   }
 
 
   void goToLoginScreen(){
-    Get.offAllNamed(LoginScreen.routeName);
+    Get.offAllNamed(SignInScreen.routeName);
   }
 
 
@@ -94,9 +95,9 @@ class AuthController extends GetxController {
   // A function which registers  a user when called
   Future<void> signUpUser(String email, String password, String fName, String lName) async{
     // creating empty strings when user first signs Up
-    String phone = '';
+    String phone = "";
     String position = 'ADMIN/CEO';
-    String imageUrl = '';
+    String imageUrl = "";
     bool isUserAnAdmin = true;
 
     try{
@@ -105,11 +106,24 @@ class AuthController extends GetxController {
       await auth.createUserWithEmailAndPassword(email: email, password: password);
       await Future.delayed(const Duration(seconds: 1));
       // save user details in the Database
-      await saveUserInFireStore(email.toLowerCase(), fName, lName, phone, position, imageUrl, "", isUserAnAdmin);
+      await saveUserInFireStore(
+        email: email.toLowerCase(), 
+        fn: fName, 
+        ln: lName, 
+        phone: phone, 
+        position: position, 
+        imageUrl: imageUrl, 
+        myAdminEmailAddress: "", 
+        address: "",
+        qualification: "",
+        salary: "",
+        isAdmin : isUserAnAdmin,
+      );
       // Get details of user after signup
       await getCurrentUserDetails();
-      // UserFeedBack.showSuccess('Registration successful!');
-      await Future.delayed(const Duration(seconds: 1));
+      Get.back(); // remove the loading
+      UserFeedBack.showSuccess(infoMessage: 'You have now been registered. Welcome !', buttonText: 'Successful');
+      await Future.delayed(const Duration(seconds: 2));
       goToHomeScreen();
     }on FirebaseAuthException catch(e){
       AppLogger.e(e);
@@ -130,8 +144,9 @@ class AuthController extends GetxController {
       await Future.delayed(const Duration(seconds: 1));
       // Get details of user after login
       await getCurrentUserDetails();
+      Get.back(); // remove the loading
       // show success feedback
-      // UserFeedBack.showSuccess('You have successfully logged In!');
+      UserFeedBack.showSuccess(infoMessage: 'You have successfully logged In!', buttonText: 'Successful');
       await Future.delayed(const Duration(seconds: 2));
       goToHomeScreen();
     }on FirebaseAuthException catch(e){
@@ -160,7 +175,7 @@ class AuthController extends GetxController {
 
 
   // Function which creates a user in the fireStore DB when registration is done
-  Future<void> saveUserInFireStore(String email, String fn, String ln, String phone, String position, String imageUrl, String myAdminEmailAddress, bool isAdmin) async {
+  Future<void> saveUserInFireStore({required String email, required String fn, required String ln, required String phone, required String position, required String imageUrl, required String myAdminEmailAddress, required String address, required String qualification, required String salary, required bool isAdmin}) async {
     UserModel userModel = UserModel(
       firstName: fn, 
       surname: ln, 
@@ -171,7 +186,11 @@ class AuthController extends GetxController {
       dateEmployed: DateFormat.yMMMMEEEEd().format(DateTime.now()),
       imageUrl: imageUrl,
       myAdminEmailAddress: myAdminEmailAddress,
+      address: address,
+      qualification: qualification,
+      salary: salary,
       mySales: [],
+      myExpenses: [],
     );
 
     // serializing it to Json and sending it to user collection in fireStore
@@ -191,25 +210,33 @@ class AuthController extends GetxController {
       
       // Checking if a user is a staff of a particular admin
       for(var u in userList){
-        if(u.myAdminEmailAddress == getCurrentUser()!.email && !u.isAdmin){
+        if(u.myAdminEmailAddress==getCurrentUser()!.email && !u.isAdmin){
           print("${u.myAdminEmailAddress} = ${getCurrentUser()!.email}");
           // adding each of the staff to the list
           allUsersDataList.add(u);
           print("STAFF LIST $allUsersDataList");
         }
-      }
-           
+      }           
 
-      // Looping through the user Data and fetching userSales data from "mySales Doc" and 
-      // assigning each user's sales data to the field of my_sales in the userModel. 
-      // This 'my_sales' field is a list of type 'SalesModel'
+      // Looping through the user Data and fetching userTransactions data from "myTransactions Doc" and 
+      // assigning each user's transaction data to the field of my_transactions in the userModel. 
+      // This 'my_transactions' field is a list of type 'SalesModel'
       for(var u in allUsersDataList){
-        // getting users sales data. Users here are the staff of the admin
-        QuerySnapshot<Map<String, dynamic>> userSaleData = await userFirestoreReference.doc(u.email).collection('mySales').get();
-        // serializing it to a salesModel object
-        final salesDataList = userSaleData.docs.map(((e) => SalesModel.fromSnapshot(e))).toList();
-        // assigning the serialized object the field of mySales in the userModel
-        u.mySales.assignAll(salesDataList);       
+        // getting users transactions data. Users here are the staff of the admin
+        QuerySnapshot<Map<String, dynamic>> userTransactionData = await userFirestoreReference.doc(u.email).collection('myTransactions').get();
+        // serializing it to a TransactionsModel object
+        final transactionsDataList = userTransactionData.docs.map(((e) => TransactionModel.fromSnapshot(e))).toList();
+
+        // Looping through the transactionsList in order to separate sales from expenses
+        for(var txn in transactionsDataList){
+          if(txn.isExpenses){
+            // adding the serialized and filtered expenses object to myExpenses in the userModel
+            u.myExpenses.add(txn);     
+          }else{
+            // adding the serialized and filtered sales object to mySales in the userModel
+            u.mySales.add(txn);     
+          }
+        }         
       
       }
 
@@ -222,16 +249,11 @@ class AuthController extends GetxController {
 
 
   // A function which creates user profile for a new staff
-  Future<void> createNewStaff(String email, String password, String fName, String lName, String phoneNumber, String position, PlatformFile pickedImage) async {
+  Future<void> createNewStaff({required String email, required String password, required String fName, required String lName, required String phoneNumber, required String position, required String address, required String qualification, required String salary, required PlatformFile pickedImage}) async {
      try{
       // start Loading
       UserFeedBack.showLoading();
 
-      // a boolean variable
-      bool isUserAnAdmin = false;
-      // my  admin email
-      String adminEmail = getCurrentUser()!.email!;
-            
       // create user with email & pswd
       await auth.createUserWithEmailAndPassword(email: email, password: password);
       // delay before next API call
@@ -241,13 +263,26 @@ class AuthController extends GetxController {
       // delay before next API call
       await Future.delayed(const Duration(seconds: 1));
       // save user details in the Database
-      await saveUserInFireStore(email.toLowerCase(), fName, lName, phoneNumber, position, imageUrl, adminEmail, isUserAnAdmin);
+      await saveUserInFireStore(
+        email: email.toLowerCase(), 
+        fn: fName, 
+        ln: lName, 
+        phone: phoneNumber, 
+        position: position, 
+        imageUrl: imageUrl, 
+        myAdminEmailAddress: getCurrentUser()!.email!, 
+        address: address,
+        qualification: qualification,
+        salary: salary,
+        isAdmin : false,
+      );
       // delay
       await Future.delayed(const Duration(seconds: 1));
+      Get.back(); // remove the loading
       // show success feedback
-      // UserFeedBack.showSuccess('Profile Successfully created');
+      UserFeedBack.showSuccess(infoMessage: 'Profile Successfully created', buttonText: 'Completed');
       // delay & sign out
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
       // sign the admin out and re-route him to the log in screen
       auth.signOut();
       goToLoginScreen();
@@ -310,9 +345,10 @@ class AuthController extends GetxController {
       await Future.delayed(const Duration(seconds: 1));
       // Get details of user after profile picture is changed
       await getCurrentUserDetails();
+      Get.back(); // remove the loading
       // show success feedback
-      // UserFeedBack.showSuccess('You have successfully changed your profile picture!');
-      await Future.delayed(const Duration(seconds: 1));
+      UserFeedBack.showSuccess(infoMessage: 'You have successfully changed your profile picture!', buttonText: 'Done');
+      await Future.delayed(const Duration(seconds: 2));
       goToHomeScreen();
     }catch (e){
       AppLogger.e(e);
@@ -340,14 +376,30 @@ class AuthController extends GetxController {
       usersProfileImage.value = currentUserData.imageUrl;
 
       await Future.delayed(const Duration(seconds: 1));
-      // getting user's sales
-      QuerySnapshot<Map<String, dynamic>> userSaleData = await userFirestoreReference.doc(getCurrentUser()!.email).collection('mySales').get();
-      // serializing it to a salesModel object
-      final salesDataList = userSaleData.docs.map(((e) => SalesModel.fromSnapshot(e))).toList();
-      // assigning the serialized object the field of mySales in the userModel
-      currentUserData.mySales.assignAll(salesDataList);
+      // getting user's transactions
+      QuerySnapshot<Map<String, dynamic>> userTransactionData = await userFirestoreReference.doc(getCurrentUser()!.email).collection('myTransactions').get();
+      // serializing it to a TransactionModel List object
+      final transactionsDataList = userTransactionData.docs.map(((e) => TransactionModel.fromSnapshot(e))).toList();
+      // Assigning the values of serialized list to current user's transaction List
+      userTransactionList.assignAll(transactionsDataList);
+
+      // Emptying the lists before populating it
+      currentUserData.mySales = [];
+      currentUserData.myExpenses = [];
+
+      // Looping through the transactionsList in order to separate sales from expenses
+        for(var txn in transactionsDataList){
+          if(txn.isExpenses){
+            // adding the serialized and filtered expenses object to myExpenses in the userModel
+            currentUserData.myExpenses.add(txn);     
+          }else{
+            // adding the serialized and filtered sales object to mySales in the userModel
+            currentUserData.mySales.add(txn);     
+          }
+        }         
 
       print("CURRENT USER SALES: ${currentUserData.mySales}");
+      print("CURRENT USER EXPENSES: ${currentUserData.myExpenses}");
 
       // deactivating loading
       isLoading.value = false;
@@ -365,9 +417,11 @@ class AuthController extends GetxController {
       // start Loading
       UserFeedBack.showLoading();
       // send reset link
-      await auth.sendPasswordResetEmail(email: email).then((value) {
+      await auth.sendPasswordResetEmail(email: email).then((value) async {
+      Get.back(); // remove the loading
       // success message
-      // UserFeedBack.showSuccess("Password Reset link has been sent to your email");
+      UserFeedBack.showSuccess(infoMessage: "Password Reset link has been sent to your email", buttonText: 'Done');
+      await Future.delayed(const Duration(seconds: 2));
       // go to login
       goToLoginScreen();
 
@@ -441,7 +495,7 @@ class AuthController extends GetxController {
 
       // Give success message and logout the Admin after operation is successful
       await auth.signOut();
-      // UserFeedBack.showSuccess("You have successfully changed $staffName's password. Please login again!");
+      UserFeedBack.showSuccess(infoMessage: "You have successfully changed $staffName's password. Please login again!", buttonText: 'Done');
       await Future.delayed(const Duration(seconds: 3));
       goToLoginScreen();        
  

@@ -4,9 +4,8 @@ import 'package:get/get.dart';
 import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/controllers/auth_controller.dart';
 import 'package:saletick/custom_widgets/buttons/main_button.dart';
-import 'package:saletick/custom_widgets/header/header_widget.dart';
+import 'package:saletick/custom_widgets/header/header_one_widget.dart';
 import 'package:saletick/custom_widgets/inputs/input_field_plus_text.dart';
-import 'package:saletick/custom_widgets/texts/text_n_divider_header.dart';
 import 'package:saletick/utilities/feedback.dart';
 
 
@@ -50,8 +49,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const HeaderWidget(),
-            const TextnDividerHeader(text: 'Update Profile Image'),
+            const SaletickHeaderOne(headerOneTitleText: 'Update Profile'),
             // Form Section
             Container(
               padding: EdgeInsets.symmetric(horizontal: Dimensions.size5, vertical: Dimensions.size20),
@@ -65,14 +63,19 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         child: GestureDetector(
                           onTap: pickImage,
                           child: AbsorbPointer(
-                            child: InputFieldPlusTextWidget(text: 'Choose Image', textController: TextEditingController(), myHintText: 'Pick Image File'),
+                            child: InputFieldPlusTextWidget(
+                              text: 'Choose Image', 
+                              textController: TextEditingController(), 
+                              myHintText: 'Pick Image File',
+                              customTextInputAction: TextInputAction.next,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
                   if(pickedImage == null)
-                    SizedBox(height: Dimensions.size30),
+                    SizedBox(height: Dimensions.size40),
                   // Widget Showing The Name of the Image picked: shown if file has been picked
                   if(pickedImage != null)
                     Padding(
