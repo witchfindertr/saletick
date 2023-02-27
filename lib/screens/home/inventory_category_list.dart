@@ -118,8 +118,10 @@ class _InventoryCategoryListScreenState extends State<InventoryCategoryListScree
                     );
                   },
                   itemBuilder: (context, index) {
+                    // recent category stays at the top
+                    var rearrangedCategoryList = productController.allProductsCategoryList.reversed.toList();
                     // specific product for each index
-                    var pc = productController.allProductsCategoryList[index];
+                    var pc = rearrangedCategoryList[index];
                     return ExpansionTile(
                       title: Text(
                         pc.category, // 'AkaPr' 
@@ -129,9 +131,11 @@ class _InventoryCategoryListScreenState extends State<InventoryCategoryListScree
                         ),
                       ),
                         // Getting each the each product's categories with List.generate()
-                      children: List.generate(pc.products.length, (index) {  
+                      children: List.generate(pc.products.length, (index) { 
+                        // rearrange, so that the latest product will appear first
+                        var rearrangedProductList = pc.products.reversed.toList(); 
                         //  products associated with this category: 'pc'                    
-                        var product = pc.products[index]; 
+                        var product = rearrangedProductList[index]; 
                         return Padding(
                           padding: EdgeInsets.symmetric(horizontal: Dimensions.size15),
                           child: Column(

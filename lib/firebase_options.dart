@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB6phbsIP_s3j2tmvjbGTZd8BRaHeJ3NxM',
-    appId: '1:581158486898:android:64bd26c71846eb8db953eb',
+    appId: '1:581158486898:android:a3746fee84c22303b953eb',
     messagingSenderId: '581158486898',
     projectId: 'saletick-1db9a',
     storageBucket: 'saletick-1db9a.appspot.com',
@@ -59,11 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCZWJ0yDsChm4fo04NNRludvKXlA4COIww',
-    appId: '1:581158486898:ios:e62d9891792a45afb953eb',
+    appId: '1:581158486898:ios:f0c93b2617a30993b953eb',
     messagingSenderId: '581158486898',
     projectId: 'saletick-1db9a',
     storageBucket: 'saletick-1db9a.appspot.com',
-    iosClientId: '581158486898-4f8200sjd4v56s8jma3q88e4lhe25o1f.apps.googleusercontent.com',
-    iosBundleId: 'com.example.saletick',
+    iosClientId: '581158486898-o5prgl7d8so2iom5rc97me9nnt0o9rrc.apps.googleusercontent.com',
+    iosBundleId: 'com.nanocodes.saletick',
   );
 }

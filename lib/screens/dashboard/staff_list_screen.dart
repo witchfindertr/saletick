@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:saletick/controllers/auth_controller.dart';
 import 'package:saletick/screens/dashboard/staff_details_screen.dart';
 import 'package:saletick/custom_widgets/header/header_one_widget.dart';
 import 'package:saletick/custom_widgets/footer/saletick_bottom_nav_bar.dart';
@@ -19,19 +20,19 @@ class StaffListScreen extends StatefulWidget {
 
 class _StaffListScreenState extends State<StaffListScreen> {
   // auth controller instance
-  // AuthController controller = Get.find<AuthController>();
+  AuthController controller = Get.find<AuthController>();
 
 
   @override
   void initState() {
     // fetch current user's data if null
-    // if(controller.currentUserData == null ){
-    //   controller.getCurrentUserDetails();
-    // }
-    // // fetch all staff list if list is empty
-    // if(controller.allUsersDataList.isEmpty){
-    //   controller.fetchAllUserData();              
-    // }
+    if(controller.currentUserData == null ){
+      controller.getCurrentUserDetails();
+    }
+    // fetch all staff list if list is empty
+    if(controller.allUsersDataList.isEmpty){
+      controller.fetchAllUserData();              
+    }
 
     super.initState();    
   }
@@ -42,57 +43,56 @@ class _StaffListScreenState extends State<StaffListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            //Header
-            const SaletickHeaderOne(headerOneTitleText: 'Staff MGT'),
-            Container(
-              // padding: EdgeInsets.symmetric(horizontal: Dimensions.size10),
-              child: Column(
-                children: [
-                  SizedBox(height: Dimensions.size50),
-                  // Search Input Widget
-                  SearchInputWidget(onTapped: (){}),
-                  SizedBox(height: Dimensions.size10),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: Dimensions.size15),
-                    child: MediaQuery.removePadding(
-                      context: context,
-                      removeTop: true,
-                      child: ListView.separated(
-                        itemCount: 9, // controller.allUsersDataList.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        separatorBuilder: ((context, index) {
-                          return Column(
-                            children: [
-                              SizedBox(height: Dimensions.size5),                            
-                            ],
-                          );
-                        }),
-                        itemBuilder: ((context, index) {
-                         // var staff = controller.allUsersDataList[index];
-                          return  InkWell(
-                            onTap: (){
-                              // Get.to(StaffDetailScreen(staff: staff));
-                              Get.to(StaffDetailsScreen());
-                            },
-                            child: const StaffCardWidget(
-                              staffFirstName: 'Chinaza', 
-                              staffLastName: 'Ugwuoke', 
-                              profileImage: 'assets/images/ellipse-14-bg.png',
-                            ), // staff name
-                            // child: StaffRowWidget(text: "${staff.firstName} (${staff.position})"), // staff name
-                          );
-                        })
+        child: Obx(() {
+            return Column(
+              children: [
+                //Header
+                const SaletickHeaderOne(headerOneTitleText: 'Staff MGT'),
+                Column(
+                  children: [
+                    SizedBox(height: Dimensions.size50),
+                    // Search Input Widget
+                    SearchInputWidget(onTapped: (){}),
+                    SizedBox(height: Dimensions.size10),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: Dimensions.size15),
+                      child: MediaQuery.removePadding(
+                        context: context,
+                        removeTop: true,
+                        child: ListView.separated(
+                          itemCount: controller.allUsersDataList.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          separatorBuilder: ((context, index) {
+                            return Column(
+                              children: [
+                                SizedBox(height: Dimensions.size5),                            
+                              ],
+                            );
+                          }),
+                          itemBuilder: ((context, index) {
+                           var staff = controller.allUsersDataList[index];
+                            return  InkWell(
+                              onTap: (){
+                                // Go to staff details
+                                Get.to(StaffDetailsScreen(staff: staff));
+                              },
+                              child: StaffCardWidget(
+                                staffFirstName: staff.firstName, // 'Chinaza'
+                                staffLastName: staff.surname, // 'Ugwuoke', 
+                                profileImage: staff.imageUrl, //'assets/images/ellipse-14-bg.png',
+                              ),                          
+                            );
+                          })
+                        ),
                       ),
-                    ),
-                  ),                 
-                ],
-              ),
-            ),
-            SizedBox(height: Dimensions.size60),
-          ],
+                    ),                 
+                  ],
+                ),
+                SizedBox(height: Dimensions.size60),
+              ],
+            );
+          }
         ),
       ),
       floatingActionButton: const SaletickFloatingActionButton(isAddStaff: true, isSettings: true),

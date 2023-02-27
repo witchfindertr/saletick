@@ -54,10 +54,10 @@ class _ResetStaffPasswordScreenState extends State<ResetStaffPasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  GestureDetector(
+                 GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: const Icon(Icons.close),
-                  ),
+                  ), 
                   SizedBox(height: Dimensions.size40*2),
                   Text(
                     'Reset Password',

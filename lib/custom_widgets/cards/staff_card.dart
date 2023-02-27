@@ -31,7 +31,7 @@ class StaffCardWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15.5*Dimensions2.fem),
                 image: DecorationImage (
                   fit: BoxFit.cover,
-                  image: AssetImage (
+                  image: NetworkImage (
                     profileImage, // 'assets/images/ellipse-11-bg-mix.png',
                   ),
                 ),

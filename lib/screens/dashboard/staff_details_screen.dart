@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:saletick/controllers/auth_controller.dart';
 import 'package:saletick/custom_widgets/header/header_one_widget.dart';
 import 'package:saletick/app_constants/app_dimensions.dart';
+import 'package:saletick/models/user_model.dart';
+import 'package:saletick/screens/auth_screens/reset_staff_pswd_screen.dart';
+import 'package:saletick/screens/dashboard/specific_staff_sales.dart';
 import 'package:saletick/utilities/utils.dart';
 
 
 class StaffDetailsScreen extends StatelessWidget {
+  final UserModel staff;
+  
+  StaffDetailsScreen({super.key, required this.staff,});
+
+  AuthController authController = Get.find<AuthController>();
   
   @override
   Widget build(BuildContext context) {
@@ -18,7 +28,7 @@ class StaffDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             // HEADER HERE
-           const SaletickHeaderOne(headerOneTitleText: 'Chinaza',),
+           const SaletickHeaderOne(headerOneTitleText: 'Staff Details'),
             // Container Housing: Staff Profile Image & Settings Icon
             Container(
               padding: EdgeInsets.fromLTRB(38*fem, 14.73*fem, 30.4*fem, 14*fem),
@@ -42,16 +52,17 @@ class StaffDetailsScreen extends StatelessWidget {
                             border: Border.all(color: Color(0xff430463)),
                             image: DecorationImage (
                               fit: BoxFit.cover,
-                              image: AssetImage (
-                                'assets/images/ellipse-14-bg.png',
+                              image: NetworkImage (
+                                staff.imageUrl, //'assets/images/ellipse-14-bg.png',
                               ),
                             ),
                           ),
                         ),
-                        // SETTINGS icon HERE
+                        // SETTINGS icon HERE: Reset Staff Password
                         InkWell(
                           onTap: (() {
-                            print('Seetings tapped');
+                            // reset staff pswd screen
+                            Get.to(ResetStaffPasswordScreen(staffObj: staff));
                           }),
                           child: Container(
                             width: 34.39*fem,
@@ -89,7 +100,7 @@ class StaffDetailsScreen extends StatelessWidget {
                         Container(
                           width: Dimensions.size100*1.3,
                           child: Text(
-                            'Chiomaujfdjd Amandaeueiidj',
+                            staff.firstName, // 'Chioma',
                             overflow: TextOverflow.fade,
                             style: SafeGoogleFont (
                               'Poppins',
@@ -124,8 +135,7 @@ class StaffDetailsScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          // PNg (128:739)
-                          '+234567891342',
+                           staff.phoneNumber, // '+234567891342',
                           style: SafeGoogleFont (
                             'Poppins',
                             fontSize: 12*ffem,
@@ -160,7 +170,7 @@ class StaffDetailsScreen extends StatelessWidget {
                         Container(
                           width: Dimensions.size100*1.2,
                           child: Text(                              
-                            'chioma@gmsil.com',
+                            staff.email, // 'chioma@gmsil.com',
                             overflow: TextOverflow.ellipsis,
                             style: SafeGoogleFont (
                               'Poppins',
@@ -195,7 +205,7 @@ class StaffDetailsScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Sales Rep',
+                          staff.position, // 'Sales Rep',
                           style: SafeGoogleFont (
                             'Poppins',
                             fontSize: 12*ffem,
@@ -230,7 +240,7 @@ class StaffDetailsScreen extends StatelessWidget {
                         Container(
                           margin: EdgeInsets.fromLTRB(0*fem, 2*fem, 0*fem, 0*fem),
                           child: Text(
-                            'Bachelors Degree',
+                            staff.qualification, // 'Bachelors Degree',
                             style: SafeGoogleFont (
                               'Poppins',
                               fontSize: 12*ffem,
@@ -264,7 +274,7 @@ class StaffDetailsScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '20,000',
+                          authController.convertStringAmountToActualMoney(staff.salary), // '20,000',
                           style: SafeGoogleFont (
                             'Poppins',
                             fontSize: 12*ffem,
@@ -297,7 +307,7 @@ class StaffDetailsScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '345,000',
+                          authController.calculateTotalSalesOfUser(staff.mySales), // '345,000',
                           style: SafeGoogleFont (
                             'Poppins',
                             fontSize: 12*ffem,
@@ -313,7 +323,7 @@ class StaffDetailsScreen extends StatelessWidget {
                   Container(
                     margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 23.6*fem, 15*fem),
                     child: Text(
-                      'Employed 31st February, 2023',
+                      'Employed ${staff.dateEmployed}',
                       style: SafeGoogleFont (
                         'Poppins',
                         fontSize: 12*ffem,
@@ -323,10 +333,10 @@ class StaffDetailsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // BUTTON - See Sales
+                  // BUTTON - See Staff Sales
                   GestureDetector(
                     onTap: (() {
-                      print("Sales Loading . . .");
+                      Get.to(SpecificStaffSalesScreen(specificStaff: staff));
                     }),
                     child: Container(
                       margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 24.6*fem, 0*fem),

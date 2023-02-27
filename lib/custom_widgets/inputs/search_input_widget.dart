@@ -14,7 +14,7 @@ class SearchInputWidget extends StatelessWidget {
       margin: EdgeInsets.fromLTRB(10*Dimensions2.fem, 0*Dimensions2.fem, 10*Dimensions2.fem, 28*Dimensions2.fem),
       padding: EdgeInsets.fromLTRB(3*Dimensions2.fem, 0*Dimensions2.fem, 0*Dimensions2.fem, 0*Dimensions2.fem),
       width: double.infinity,
-      height: 43*Dimensions2.fem,
+      height: 50*Dimensions2.fem,
       decoration: BoxDecoration (
         color: Color(0x1e8f7aff),
         borderRadius: BorderRadius.circular(3*Dimensions2.fem),

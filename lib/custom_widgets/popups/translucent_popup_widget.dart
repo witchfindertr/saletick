@@ -6,7 +6,8 @@ import 'package:get/get.dart';
 import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/app_constants/dimensions2.dart';
 import 'package:saletick/controllers/auth_controller.dart';
-import 'package:saletick/screens/dashboard/add_new_staff_screen.dart';
+import 'package:saletick/screens/dashboard/all_expenses_list_screen.dart';
+import 'package:saletick/screens/dashboard/create_new_staff_screen.dart';
 import 'package:saletick/screens/transactions/make_expenses.dart';
 import 'package:saletick/screens/products/add_products_to_inventory.dart';
 import 'package:saletick/screens/settings/settings_screen.dart';
@@ -41,7 +42,7 @@ class TranslucentPopupWidget extends StatefulWidget {
 
 class _TranslucentPopupWidgetState extends State<TranslucentPopupWidget> with TickerProviderStateMixin {
 
-  // Animation controller
+  // Animation Controller
   late AnimationController controller;
 
   // Auth Controller
@@ -111,7 +112,7 @@ class _TranslucentPopupWidgetState extends State<TranslucentPopupWidget> with Ti
                           if(widget.isAddStaff)
                             GestureDetector(
                               onTap: (){
-                                Get.to(const AddNewStaffScreen());
+                                Get.to(const CreateNewStaffScreen());
                               },
                               child: Column(
                                 children: [
@@ -215,7 +216,7 @@ class _TranslucentPopupWidgetState extends State<TranslucentPopupWidget> with Ti
                             if(widget.isExpenses)                            
                               GestureDetector(
                                 onTap: (){
-                                  // see all expenses
+                                  Get.to(AllExpensesListScreen());
                                 },
                                 child: Column(
                                   children: [

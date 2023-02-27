@@ -6,7 +6,6 @@ import 'package:saletick/screens/dashboard/admin_sales_summary.dart';
 import 'package:saletick/screens/home/inventory_category_list.dart';
 import 'package:saletick/screens/intro/intro_screen.dart';
 import 'package:saletick/screens/intro/splash_screen.dart';
-import 'package:saletick/screens/products/add_new_product.dart';
 
 
 class Routes {

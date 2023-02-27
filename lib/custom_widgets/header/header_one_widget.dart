@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/app_constants/dimensions2.dart';
 import 'package:saletick/controllers/auth_controller.dart';
+import 'package:saletick/screens/transactions/see_my_expenses_screen.dart';
+import 'package:saletick/screens/transactions/see_my_sales_screen.dart';
 import 'package:saletick/utilities/utils.dart';
 
 class SaletickHeaderOne extends GetView<AuthController> {
@@ -133,12 +135,11 @@ class SaletickHeaderOne extends GetView<AuthController> {
                       elevation: 2,
                       onSelected: ((value) {
                         if(value == 1){
-                          print('Clicked on MySales'); 
                           //See my Sales   
-                          // Get.to(SeeMySalesScreen(user: controller.currentUserData));
-                          // controller.getCurrentUserDetails();              
+                          Get.to(SeeMySalesScreen(user: controller.currentUserData));             
                         }else if(value == 2){
-                          // go to my expenses                   
+                          // go to my expenses
+                          Get.to(SeeMyExpensesScreen(user: controller.currentUserData));                     
                         }else if(value == 3){
                           // calling logOut function
                           controller.signOutUser();                      

@@ -1,5 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:saletick/controllers/auth_controller.dart';
 import 'package:saletick/custom_widgets/header/header_one_widget.dart';
 import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/custom_widgets/buttons/main_button.dart';
@@ -7,14 +9,14 @@ import 'package:saletick/custom_widgets/inputs/input_field_plus_text.dart';
 import 'package:saletick/utilities/feedback.dart';
 
 
-class AddNewStaffScreen extends StatefulWidget {
-  const AddNewStaffScreen({Key? key}) : super(key: key);
+class CreateNewStaffScreen extends StatefulWidget {
+  const CreateNewStaffScreen({Key? key}) : super(key: key);
 
   @override
-  State<AddNewStaffScreen> createState() => _AddNewStaffScreenState();
+  State<CreateNewStaffScreen> createState() => _CreateNewStaffScreenState();
 }
 
-class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
+class _CreateNewStaffScreenState extends State<CreateNewStaffScreen> {
 
   // input controllers
   TextEditingController firstNameController = TextEditingController();
@@ -27,6 +29,7 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
   TextEditingController addressController = TextEditingController();
   TextEditingController qualificationController = TextEditingController();
   TextEditingController imageController = TextEditingController();
+  TextEditingController salaryController = TextEditingController();
 
   // form key
   var createStaffKey = GlobalKey<FormState>();
@@ -34,8 +37,8 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
   // IMAGE UPLOAD
   PlatformFile? pickedImage;
 
-  // // instance of auth controller
-  // var authController = Get.find<AuthController>();
+  // instance of auth controller
+  var authController = Get.find<AuthController>();
 
 
   // function which prompts the user to select an image file
@@ -100,11 +103,12 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
                             customTextInputAction: TextInputAction.next,
                           ),
                         ),
-                        // surname
+                        // Surname
                         Expanded(
                           child: InputFieldPlusTextWidget(
-                            text: 'Address', 
-                            textController: addressController,
+                            text: 'Salary', 
+                            textController: salaryController,
+                            isItForNumber: true,
                             customTextInputAction: TextInputAction.next,
                           ),
                         ),
@@ -167,7 +171,23 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
                         ),
                       ],
                     ), 
-                     SizedBox(height: Dimensions.size15),                   
+                     SizedBox(height: Dimensions.size15), 
+                     // Address
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InputFieldPlusTextWidget(
+                            text: 'Address', 
+                            textController: addressController, 
+                            onChanged: ((value) {
+                              imageController.text = 'Click Here to Pick an Image';                             
+                            }),
+                            customTextInputAction: TextInputAction.done,
+                          ),
+                        ),
+                      ],
+                    ),                  
+                    SizedBox(height: Dimensions.size15),                   
                     // Upload Image
                     Row(
                       children: [                       
@@ -178,6 +198,7 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
                               child: InputFieldPlusTextWidget(
                                 text: 'Select an Image', 
                                 textController: imageController,
+                                myHintText: 'Click Here to Pick an Image',
                                 customTextInputAction: TextInputAction.done,
                               )
                             ),
@@ -209,32 +230,35 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
                           return;
                         }
 
-                       // Has image been picked?
-                      //  if(pickedImage == null){
-                      //   UserFeedBack.showError('You have not selected any image. Simply tap on the "Upload Image" field to select an image file');
-                      //  }else{
-                      //     // checking if form is valid
-                      //     if(createStaffKey.currentState!.validate()){
-                      //       UserFeedBack.showConfirmation(
-                      //         onConfirm: (){
-                      //           // pop off the confirm dialog
-                      //           Get.back();
+                      // Has image been picked?
+                       if(pickedImage == null){
+                        UserFeedBack.showError('You have not selected any image. Simply tap on the "Upload Image" field to select an image file');
+                       }else{
+                          // checking if form is valid
+                          if(createStaffKey.currentState!.validate()){
+                            UserFeedBack.showConfirmation(
+                              onConfirm: (){
+                                // pop off the confirm dialog
+                                Get.back();
 
-                      //           // call the create Staff function                               
-                      //           authController.createNewStaff(
-                      //             emailController.text.trim(), 
-                      //             passwordController.text.trim(),
-                      //             firstNameController.text.trim(), 
-                      //             surnameController.text.trim(), 
-                      //             phoneNumberController.text.trim(), 
-                      //             positionController.text.trim(),
-                      //             pickedImage!,
-                      //           );                              
-                      //         }, 
-                      //         confirmQuestion: 'Create New Staff Profile?'
-                      //       );
-                      //     }
-                      //  }
+                                // call the create Staff function                               
+                                authController.createNewStaff(
+                                  email: emailController.text.trim(), 
+                                  password: passwordController.text.trim(),
+                                  fName: firstNameController.text.trim(), 
+                                  lName: surnameController.text.trim(), 
+                                  phoneNumber: phoneNumberController.text.trim(), 
+                                  position: positionController.text.trim(),
+                                  address: addressController.text.trim(),
+                                  qualification: qualificationController.text.trim(),
+                                  salary: salaryController.text.trim(),
+                                  pickedImage: pickedImage!,
+                                );                              
+                              }, 
+                              confirmQuestion: 'Create New Staff Profile?'
+                            );
+                          }
+                       }
                       },
                       text: 'Create',
                     ),
@@ -250,14 +274,14 @@ class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
 }
 
 
-// class AddNewStaffScreen extends StatefulWidget {
-//   const AddNewStaffScreen({Key? key}) : super(key: key);
+// class CreateNewStaffScreen extends StatefulWidget {
+//   const CreateNewStaffScreen({Key? key}) : super(key: key);
 
 //   @override
-//   State<AddNewStaffScreen> createState() => _AddNewStaffScreenState();
+//   State<CreateNewStaffScreen> createState() => _CreateNewStaffScreenState();
 // }
 
-// class _AddNewStaffScreenState extends State<AddNewStaffScreen> {
+// class _CreateNewStaffScreenState extends State<CreateNewStaffScreen> {
 
 //   // input controllers
 //   TextEditingController firstNameController = TextEditingController();

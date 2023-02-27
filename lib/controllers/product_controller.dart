@@ -92,6 +92,9 @@ class ProductController extends GetxController{
              productsList.add(p);
             }
           }
+
+          allProductsCategoryList.add(ProductCategoryModel(category: categoryName, products: productsList));
+          print('PRODUCTS--category--GOTTEN et STAFF  (success) $allProductsCategoryList');
         }
 
       }
@@ -265,15 +268,16 @@ class ProductController extends GetxController{
         }
         print('ALL TXN GOTTEN by ADMIN  (success) $allTransactionsDataList');
       }else{
-        QuerySnapshot<Map<String, dynamic>> txnData = await transactionsFirestoreReference.doc(_authController.currentUserData.myAdminEmailAddress).collection('TRANSACTIONS').get();
-        var transactions = txnData.docs.map((e) => TransactionModel.fromSnapshot(e)).toList();
+        QuerySnapshot<Map<String, dynamic>> txnData2 = await transactionsFirestoreReference.doc(_authController.currentUserData.myAdminEmailAddress).collection('TRANSACTIONS').get();
+        var transactions2 = txnData2.docs.map((e) => TransactionModel.fromSnapshot(e)).toList();
+        allTransactionsDataList.assignAll(transactions2);
 
         // Emptying the lists incase there are any contents . . .
         allSalesDataList.value = [];
         allExpensesDataList.value = [];
 
         // Looping through transactions LIST to separate sales and expenses
-        for(var txn in transactions){
+        for(var txn in transactions2){
           if(txn.isExpenses){
             allExpensesDataList.add(txn);
           }else{
@@ -307,7 +311,7 @@ class ProductController extends GetxController{
           'unit_sold' : 0
         }
       );
-      
+
       // fetch all products data
       getAllProducts(true);
       Get.back(); // stop loading
@@ -387,21 +391,23 @@ String totalCashgeneratedByProductToday(ProductModel productModel){
 
 
   // A helps a user add expenses when called: to make an expenses
-  Future<void> addExpensesToRecords({required String expensesName, required String amountSpent, required bool isAdmin, required String adminEmail}) async {
+  Future<void> addExpensesToRecords({required String expensesName, required String amountSpent, required bool isAdmin, required String adminEmail, required String whoMadeExpenses}) async {
     DateTime currentDateTime = DateTime.now();
+    String myDate = DateFormat('yMd').format(DateTime.now());
+    String myTime = DateFormat.jm().format(DateTime.now());
 
     try{
       UserFeedBack.showLoading();
       // Creating an object of the Transaction Model
       TransactionModel txnModel = TransactionModel(
         product: {}, 
-        whoSoldIt: "", 
+        whoSoldIt: whoMadeExpenses, 
         unitSold: 0, 
         totalAmount: amountSpent, 
         productName: "",
         expensesName: expensesName,
-        time: "", 
-        date: "",
+        time: myTime, 
+        date: myDate,
         dateCreated: currentDateTime,
         soldTo: "",
         isExpenses: true,

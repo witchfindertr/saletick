@@ -7,7 +7,6 @@ import 'package:saletick/app_constants/app_colors.dart';
 import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/custom_widgets/buttons/main_button.dart';
 import 'package:saletick/custom_widgets/inputs/input_field_plus_text.dart';
-import 'package:saletick/models/transaction_model.dart';
 import 'package:saletick/utilities/feedback.dart';
 
 class MakeExpensesScreen extends StatefulWidget {
@@ -73,7 +72,8 @@ class _MakeExpensesScreenState extends State<MakeExpensesScreen> {
                 if(makeExpensesFormKey.currentState!.validate()){
                   // some variables
                   var expenseReason = expensesNameController.text.trim();
-                  var expenseAmount = totalAmountController.text.trim();                 
+                  var expenseAmount = totalAmountController.text.trim();  
+                  var fullName = "${authController.currentUserData.surname}  ${authController.currentUserData.firstName}";               
 
                   // getting confirmation from the user
                   UserFeedBack.showConfirmation(
@@ -85,6 +85,7 @@ class _MakeExpensesScreenState extends State<MakeExpensesScreen> {
                         amountSpent: expenseAmount, 
                         isAdmin: authController.currentUserData.isAdmin,
                         adminEmail: authController.currentUserData.myAdminEmailAddress,
+                        whoMadeExpenses: fullName,
                       );
                     }, 
                     confirmQuestion: 'Continue to create this expenses?'

@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:saletick/app_constants/app_colors.dart';
 import 'package:saletick/app_constants/app_dimensions.dart';
 import 'package:saletick/app_constants/dimensions2.dart';
 import 'package:saletick/controllers/auth_controller.dart';
 import 'package:saletick/controllers/chart_controller.dart';
+import 'package:saletick/custom_widgets/lists/chart_filter_card.dart';
+import 'package:saletick/models/chart_model.dart';
+import 'package:saletick/screens/transactions/see_my_expenses_screen.dart';
+import 'package:saletick/screens/transactions/see_my_sales_screen.dart';
 import 'package:saletick/utilities/utils.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
-class SaletickHeaderTwo extends GetView<AuthController> {
+class SaletickHeaderTwo extends StatefulWidget {
 
-  SaletickHeaderTwo({super.key});
+  const SaletickHeaderTwo({super.key});
 
+  @override
+  State<SaletickHeaderTwo> createState() => _SaletickHeaderTwoState();
+}
+
+class _SaletickHeaderTwoState extends State<SaletickHeaderTwo> {
   // instance of chart controller
   ChartController chartController = Get.find<ChartController>();
+
+  // instance of auth controller
+  AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +35,7 @@ class SaletickHeaderTwo extends GetView<AuthController> {
           margin: EdgeInsets.fromLTRB(0*Dimensions2.fem, 0*Dimensions2.fem, 0*Dimensions2.fem, 12.61*Dimensions2.fem),
           padding: EdgeInsets.fromLTRB(24*Dimensions2.fem, 27*Dimensions2.fem, 36*Dimensions2.fem, 38.39*Dimensions2.fem),
           width: double.infinity,
-          height: 396.39*Dimensions2.fem,
+          height: 510*Dimensions2.fem,    ///396.39*Dimensions2.fem,
           decoration: const BoxDecoration (
             image: DecorationImage (
               fit: BoxFit.cover,
@@ -57,7 +71,7 @@ class SaletickHeaderTwo extends GetView<AuthController> {
                                 width: 57*Dimensions2.fem,
                                 height: 57*Dimensions2.fem,
                                 // if imageUrl is empty use default avatar image for profile
-                                child: (controller.usersProfileImage.value.isEmpty)? Container(
+                                child: (authController.usersProfileImage.value.isEmpty)? Container(
                                   decoration: BoxDecoration (
                                     borderRadius: BorderRadius.circular(28.5*Dimensions2.fem),
                                     image: const DecorationImage (
@@ -73,7 +87,7 @@ class SaletickHeaderTwo extends GetView<AuthController> {
                                     image: DecorationImage (
                                       fit: BoxFit.cover,
                                       image: NetworkImage (
-                                        controller.usersProfileImage.value, //'assets/images/ellipse-4-bg-NaC.png',
+                                        authController.usersProfileImage.value, //'assets/images/ellipse-4-bg-NaC.png',
                                       ),
                                     ),
                                   ),
@@ -128,7 +142,7 @@ class SaletickHeaderTwo extends GetView<AuthController> {
                               text: 'Welcome,',
                             ),
                             TextSpan(
-                              text: ' ${controller.currentUserData.firstName}!',
+                              text: ' ${authController.currentUserData.firstName}!',
                               style: SafeGoogleFont (
                                 'Montserrat',
                                 fontSize: 20*Dimensions2.ffem,
@@ -143,7 +157,7 @@ class SaletickHeaderTwo extends GetView<AuthController> {
                     ),
                     // The Menu (Hambugger icon)
                     Container(
-                      margin: EdgeInsets.fromLTRB(0*Dimensions2.fem, 8*Dimensions2.fem, 0*Dimensions2.fem, 18*Dimensions2.fem),
+                      margin: EdgeInsets.fromLTRB(0*Dimensions2.fem, 8*Dimensions2.fem, 0*Dimensions2.fem, 4*Dimensions2.fem),
                       width: 29*Dimensions2.fem,
                       height: double.infinity,
                       child: PopupMenuButton<int>(
@@ -151,15 +165,14 @@ class SaletickHeaderTwo extends GetView<AuthController> {
                         elevation: 2,
                         onSelected: ((value) {
                           if(value == 1){
-                            print('Clicked on MySales'); 
                             //See my Sales   
-                            // Get.to(SeeMySalesScreen(user: controller.currentUserData));
-                            // controller.getCurrentUserDetails();              
+                            Get.to(SeeMySalesScreen(user: authController.currentUserData));             
                           }else if(value == 2){
-                            // go to my expenses                   
+                            // go to my expenses
+                            Get.to(SeeMyExpensesScreen(user: authController.currentUserData));                     
                           }else if(value == 3){
                             // calling logOut function
-                            controller.signOutUser();                      
+                            authController.signOutUser();                      
                           }
                         }),
                         itemBuilder: (context) {
@@ -245,7 +258,7 @@ class SaletickHeaderTwo extends GetView<AuthController> {
               ),
               // Total AMOUNT
               Container(
-                margin: EdgeInsets.fromLTRB(84*Dimensions2.fem, 0*Dimensions2.fem, 78*Dimensions2.fem, 41*Dimensions2.fem),
+                margin: EdgeInsets.fromLTRB(84*Dimensions2.fem, 0*Dimensions2.fem, 78*Dimensions2.fem, 20*Dimensions2.fem),
                 width: double.infinity,
                 height: 68*Dimensions2.fem,
                 child: Stack(
@@ -296,7 +309,116 @@ class SaletickHeaderTwo extends GetView<AuthController> {
                   ],
                 ),
               ),
-              // CHART HERE
+              // CHART HERE : Charts area
+              Material(
+                color: Colors.white, // AppColors.mainTextColor3.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(Dimensions.size15),            
+                child: SizedBox(
+                  width: Dimensions.screenWidth*0.95,
+                  height: Dimensions.size100*2.3,
+                  child: Column(
+                    children: [
+                      // List of Chart filters : daily, weekly, monthly & yearly
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: Dimensions.size10),
+                        padding: EdgeInsets.symmetric(horizontal: Dimensions.size10),
+                        height: Dimensions.size30,
+                        child: ListView.separated(
+                          itemCount: ChartFilterListCard.chartFilter.length,
+                          scrollDirection: Axis.horizontal,
+                          separatorBuilder: ((context, index) => SizedBox(width: Dimensions.size5)),
+                          itemBuilder: ((context, index) {
+                            var filterText = ChartFilterListCard.chartFilter[index]['filter'];
+                            var list = ChartFilterListCard.chartFilter[index];
+                            return ChartFilterListCard(
+                              onTap: (){
+                                setState(() {
+                                  // deselecting previoulsy selected filter by setting their booleans to false: 
+                                  // Using for loop
+                                  for(var a in ChartFilterListCard.chartFilter){
+                                    if(a['selected'] == true){
+                                    a['selected'] = false;
+                                    } 
+                                  }
+                                  // Setting the current index to selected True onTap
+                                  list['selected'] = !list['selected'];                                
+                                });
+                              }, 
+                              filterText: filterText, 
+                              isSelected: list['selected'],
+                            );
+                          }), 
+                        ),
+                      ),
+                      // The Bar Chart from SyncFusion 
+                      // DAILY
+                      if(ChartFilterListCard.chartFilter[0]['selected'])
+                        Expanded(
+                          child: SfCartesianChart(
+                            primaryXAxis: CategoryAxis(),
+                            series: [
+                              StackedColumnSeries(
+                                borderRadius: BorderRadius.circular(Dimensions.size3),
+                                color: AppColors.mainTextColor3.withOpacity(0.8),
+                                dataSource: chartController.dailyChart, 
+                                xValueMapper: (DailyChartModel d, _) => d.day, 
+                                yValueMapper: (DailyChartModel d, _) => d.value,
+                              ),
+                            ],
+                          ),
+                        ),
+                      // WEEKLY
+                      if(ChartFilterListCard.chartFilter[1]['selected'])
+                        Expanded(
+                          child: SfCartesianChart(
+                            primaryXAxis: CategoryAxis(),
+                            series: [
+                              StackedColumnSeries(
+                                borderRadius: BorderRadius.circular(Dimensions.size3),
+                                color: AppColors.mainTextColor3.withOpacity(0.8),
+                                dataSource: chartController.weeklyChart,
+                                xValueMapper: (WeeklyChartModel w, _) => w.week, 
+                                yValueMapper: (WeeklyChartModel w, _) => w.value,
+                              ),
+                            ],
+                          ),
+                        ),
+                      // MONTHLY
+                      if(ChartFilterListCard.chartFilter[2]['selected'])
+                        Expanded(
+                          child: SfCartesianChart(
+                            primaryXAxis: CategoryAxis(),
+                            series: [
+                              StackedColumnSeries(
+                                borderRadius: BorderRadius.circular(Dimensions.size3),
+                                color: AppColors.mainTextColor3.withOpacity(0.8),
+                                dataSource: chartController.monthlyChart,
+                                xValueMapper: (MonthlyChartModel m, _) => m.month, 
+                                yValueMapper: (MonthlyChartModel m, _) => m.value,
+                              ),
+                            ],
+                          ),
+                        ),
+                      // YEARLY
+                      if(ChartFilterListCard.chartFilter[3]['selected'])
+                        Expanded(
+                          child: SfCartesianChart(
+                            primaryXAxis: CategoryAxis(),
+                            series: [
+                              StackedColumnSeries(
+                                borderRadius: BorderRadius.circular(Dimensions.size3),
+                                color: AppColors.mainTextColor3.withOpacity(0.8),
+                                dataSource: chartController.yearlyChart,
+                                xValueMapper: (YearlyChartModel y, _) => y.year, 
+                                yValueMapper: (YearlyChartModel y, _) => y.value,
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         );

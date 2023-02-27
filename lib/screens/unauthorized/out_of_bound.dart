@@ -10,13 +10,16 @@ class OutOfBoundForStaffScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.mainColor2,
+      ),
       backgroundColor: AppColors.saletickScaffoldColor,
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: Dimensions.size20),
           child: Column(
             children: [
-              SizedBox(height: Dimensions.size100),
+              SizedBox(height: Dimensions.size100),               
               Container(
                 margin: EdgeInsets.fromLTRB(0*Dimensions2.fem, 0*Dimensions2.fem, 0*Dimensions2.fem, 30*Dimensions2.fem),
                 width: 336*Dimensions2.fem,

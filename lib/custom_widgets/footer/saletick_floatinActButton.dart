@@ -61,7 +61,7 @@ class _SaletickFloatingActionButtonState extends State<SaletickFloatingActionBut
       onPressed: () {
         // calling the popup widget
         showTranslucentPopup();       
-      }, 
+      },
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5*Dimensions2.fem),
       ),
@@ -80,13 +80,6 @@ class _SaletickFloatingActionButtonState extends State<SaletickFloatingActionBut
               colors: <Color>[Color(0xff8f7aff), Color(0xff74caff)],
               stops: <double>[0, 1],
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x1c22092e),
-                offset: Offset(0*Dimensions2.fem, 2*Dimensions2.fem),
-                blurRadius: 5*Dimensions2.fem,
-              ),
-            ],
           ),
           child:  SizedBox(
             width: 28*Dimensions2.fem,

@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:money_formatter/money_formatter.dart';
 import 'package:saletick/models/transaction_model.dart';
 import 'package:saletick/models/user_model.dart';
 import 'package:saletick/screens/home/inventory_category_list.dart';
@@ -251,6 +252,8 @@ class AuthController extends GetxController {
   // A function which creates user profile for a new staff
   Future<void> createNewStaff({required String email, required String password, required String fName, required String lName, required String phoneNumber, required String position, required String address, required String qualification, required String salary, required PlatformFile pickedImage}) async {
      try{
+      var myAdminEmail = getCurrentUser()!.email!;
+
       // start Loading
       UserFeedBack.showLoading();
 
@@ -270,7 +273,7 @@ class AuthController extends GetxController {
         phone: phoneNumber, 
         position: position, 
         imageUrl: imageUrl, 
-        myAdminEmailAddress: getCurrentUser()!.email!, 
+        myAdminEmailAddress: myAdminEmail, 
         address: address,
         qualification: qualification,
         salary: salary,
@@ -490,20 +493,50 @@ class AuthController extends GetxController {
       // changing the password of the staff after re-authentication
       await loggedInUser.updatePassword(newPswd);
 
-      // deactivating loading
-      isLoading.value = false;
-
       // Give success message and logout the Admin after operation is successful
       await auth.signOut();
+      Get.back(); // stop loading
       UserFeedBack.showSuccess(infoMessage: "You have successfully changed $staffName's password. Please login again!", buttonText: 'Done');
       await Future.delayed(const Duration(seconds: 3));
       goToLoginScreen();        
  
     }catch (e){
       Get.back();
+      UserFeedBack.showError("Cannot reset password for $staffName, check to see if you provided the right or correct details");
       AppLogger.e(e);
     }
 
+  }
+
+
+
+
+  // A function which calculates the total amount a user realized from sales made, It takes of Transaction model
+  String calculateTotalSalesOfUser(List<TransactionModel> userSales){
+    double totalAmount = 0.0;
+
+    // adding each sales amount to totalAmount variable
+    for(var sale in userSales){
+      totalAmount += double.parse(sale.totalAmount);
+    }
+
+    // formatting the figures to look like money
+    MoneyFormatter fm = MoneyFormatter(amount: totalAmount);
+    String formattedCalculatedAmount = fm.output.withoutFractionDigits;
+
+    return formattedCalculatedAmount;
+  }
+
+
+
+
+  // A function which converts amount in String into a formatted money
+  String convertStringAmountToActualMoney(String amount){
+     // formatting the figures to look like money
+    MoneyFormatter fm = MoneyFormatter(amount: double.parse(amount));
+    String formattedCalculatedAmount = fm.output.withoutFractionDigits;
+
+    return formattedCalculatedAmount;
   }
 
 

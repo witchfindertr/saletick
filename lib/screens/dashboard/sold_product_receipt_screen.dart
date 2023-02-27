@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:saletick/controllers/auth_controller.dart';
 import 'package:saletick/custom_widgets/header/header_one_widget.dart';
 import 'package:saletick/app_constants/app_dimensions.dart';
+import 'package:saletick/models/product_model.dart';
+import 'package:saletick/models/transaction_model.dart';
 import 'package:saletick/utilities/utils.dart';
 
 
 class SoldProductReceiptScreen extends StatelessWidget {
-  
+  final TransactionModel txnSale;
+  final ProductModel soldProduct;
+
+  SoldProductReceiptScreen({Key? key, required this.soldProduct, required this.txnSale}) : super(key: key);
+
+  // instance of auth controller
+  var authController = Get.find<AuthController>();
+
   @override
   Widget build(BuildContext context) {
     double baseWidth = 390;
@@ -17,10 +28,10 @@ class SoldProductReceiptScreen extends StatelessWidget {
         child: Column(
           children: [
              // HEADER HERE
-           const SaletickHeaderOne(headerOneTitleText: 'Transaction',),
+           const SaletickHeaderOne(headerOneTitleText: 'Receipt'),
             // Container Housing: Staff Profile Image & Settings Icon
             Container(
-              padding: EdgeInsets.fromLTRB(38*fem, 14.73*fem, 30.4*fem, 14*fem),
+              padding: EdgeInsets.fromLTRB(38*fem, 14.73*fem, 9*fem, 14*fem),
               width: double.infinity,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -61,9 +72,8 @@ class SoldProductReceiptScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: Dimensions.size3),
-                  // Lines
+                  // Lines: Divider
                   Positioned(
-                    // line1959a (145:3169)
                     left: 30*fem,
                     top: 419.6110839844*fem,
                     child: Align(
@@ -71,7 +81,7 @@ class SoldProductReceiptScreen extends StatelessWidget {
                         width: 303*fem,
                         height: 1*fem,
                         child: Container(
-                          decoration: BoxDecoration (
+                          decoration: const BoxDecoration (
                             color: Color(0xffb8b8b8),
                           ),
                         ),
@@ -81,7 +91,7 @@ class SoldProductReceiptScreen extends StatelessWidget {
                   SizedBox(height: Dimensions.size30),
                   // PRODUCT NAME
                   Container(
-                    margin: EdgeInsets.fromLTRB(46*fem, 0*fem, 10*fem, 19*fem),
+                    margin: EdgeInsets.fromLTRB(46*fem, 0*fem, 4*fem, 19*fem),
                     width: double.infinity,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -99,23 +109,27 @@ class SoldProductReceiptScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Text(
-                          'Chocolate Bar',
-                          style: SafeGoogleFont (
-                            'Poppins',
-                            fontSize: 12*ffem,
-                            fontWeight: FontWeight.w500,
-                            height: 1.5*ffem/fem,
-                            color: Color(0xff430463),
+                        Container(
+                          width: Dimensions.size100*1.7,
+                          child: Text(
+                            soldProduct.name, //'Chocolate Bar',
+                            overflow: TextOverflow.ellipsis,
+                            style: SafeGoogleFont (
+                              'Poppins',
+                              fontSize: 12*ffem,
+                              fontWeight: FontWeight.w500,
+                              height: 1.5*ffem/fem,
+                              color: Color(0xff430463),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: Dimensions.size15),
+                  SizedBox(height: Dimensions.size10),
                   // PRODUCT NUMBER
                   Container(
-                    margin: EdgeInsets.fromLTRB(34*fem, 0*fem, 40.6*fem, 19*fem),
+                    margin: EdgeInsets.fromLTRB(34*fem, 0*fem, 4*fem, 19*fem),
                     width: double.infinity,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -133,24 +147,27 @@ class SoldProductReceiptScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Text(
-                          // PNg (128:739)
-                          '9383ed83028',
-                          style: SafeGoogleFont (
-                            'Poppins',
-                            fontSize: 12*ffem,
-                            fontWeight: FontWeight.w500,
-                            height: 1.5*ffem/fem,
-                            color: Color(0xff430463),
+                        Container(
+                          width: Dimensions.size100*1.7,
+                          child: Text(
+                            soldProduct.productID,  // '9383ed83028',
+                            overflow: TextOverflow.ellipsis,
+                            style: SafeGoogleFont (
+                              'Poppins',
+                              fontSize: 12*ffem,
+                              fontWeight: FontWeight.w500,
+                              height: 1.5*ffem/fem,
+                              color: Color(0xff430463),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: Dimensions.size15),
+                  SizedBox(height: Dimensions.size10),
                   // SALES Rep
                   Container(
-                    margin: EdgeInsets.fromLTRB(73*fem, 0*fem, 33*fem, 19*fem),
+                    margin: EdgeInsets.fromLTRB(73*fem, 0*fem, 4*fem, 19*fem),
                     width: double.infinity,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -169,9 +186,9 @@ class SoldProductReceiptScreen extends StatelessWidget {
                           ),
                         ),
                         Container(
-                          width: Dimensions.size100*1.2,
+                          width: Dimensions.size100*1.7,
                           child: Text(                              
-                            'Chiomachukwu',
+                            txnSale.whoSoldIt, // 'Chiomachukwu',
                             overflow: TextOverflow.ellipsis,
                             style: SafeGoogleFont (
                               'Poppins',
@@ -185,10 +202,10 @@ class SoldProductReceiptScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: Dimensions.size15),
+                  SizedBox(height: Dimensions.size10),
                   // DATE
                   Container(
-                    margin: EdgeInsets.fromLTRB(100*fem, 0*fem, 30*fem, 17*fem),
+                    margin: EdgeInsets.fromLTRB(100*fem, 0*fem, 10*fem, 17*fem),
                     width: double.infinity,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -207,7 +224,7 @@ class SoldProductReceiptScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '16-12-23 12:23:01',
+                          txnSale.date, //'16-12-23 12:23:01',
                           style: SafeGoogleFont (
                             'Poppins',
                             fontSize: 12*ffem,
@@ -219,10 +236,44 @@ class SoldProductReceiptScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: Dimensions.size15),
+                  SizedBox(height: Dimensions.size10),
+                  // No. of Units Sold
+                  Container(
+                    margin: EdgeInsets.fromLTRB(50*fem, 0*fem, 10*fem, 17*fem),
+                    width: double.infinity,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 33*fem, 0*fem),
+                          child: Text(
+                            'No. of Unit(s)',
+                            style: SafeGoogleFont (
+                              'Poppins',
+                              fontSize: 12*ffem,
+                              fontWeight: FontWeight.w700,
+                              height: 1.5*ffem/fem,
+                              color: Color(0xff430463),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          txnSale.unitSold.toString(), //'16-12-23 12:23:01',
+                          style: SafeGoogleFont (
+                            'Poppins',
+                            fontSize: 12*ffem,
+                            fontWeight: FontWeight.w500,
+                            height: 1.5*ffem/fem,
+                            color: Color(0xff430463),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: Dimensions.size10),
                   // UNIT PRICE
                   Container(
-                    margin: EdgeInsets.fromLTRB(76*fem, 0*fem, 55.6*fem, 19*fem),
+                    margin: EdgeInsets.fromLTRB(76*fem, 0*fem, 4*fem, 19*fem),
                     width: double.infinity,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -242,8 +293,10 @@ class SoldProductReceiptScreen extends StatelessWidget {
                         ),
                         Container(
                           margin: EdgeInsets.fromLTRB(0*fem, 2*fem, 0*fem, 0*fem),
+                          width: Dimensions.size100*1.7,
                           child: Text(
-                            '20,000',
+                            authController.convertStringAmountToActualMoney(soldProduct.amount),  // '20,000',
+                            overflow: TextOverflow.ellipsis,
                             style: SafeGoogleFont (
                               'Poppins',
                               fontSize: 12*ffem,
@@ -256,10 +309,10 @@ class SoldProductReceiptScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: Dimensions.size15),
+                  SizedBox(height: Dimensions.size10),
                   // TOTAL SALE
                   Container(
-                    margin: EdgeInsets.fromLTRB(75*fem, 0*fem, 80*fem, 19*fem),
+                    margin: EdgeInsets.fromLTRB(48*fem, 0*fem, 4*fem, 19*fem),
                     width: double.infinity,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -267,7 +320,7 @@ class SoldProductReceiptScreen extends StatelessWidget {
                         Container(
                           margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 36*fem, 0*fem),
                           child: Text(
-                            'Total Sale',
+                            'Total Amount',
                             style: SafeGoogleFont (
                               'Poppins',
                               fontSize: 12*ffem,
@@ -277,22 +330,26 @@ class SoldProductReceiptScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Text(
-                          '365,000',
-                          style: SafeGoogleFont (
-                            'Poppins',
-                            fontSize: 12*ffem,
-                            fontWeight: FontWeight.w500,
-                            height: 1.5*ffem/fem,
-                            color: Color(0xff430463),
+                        Container(
+                          width: Dimensions.size100*1.6,
+                          child: Text(
+                            authController.convertStringAmountToActualMoney(txnSale.totalAmount),  // totalAmount,
+                            overflow: TextOverflow.ellipsis,
+                            style: SafeGoogleFont (
+                              'Poppins',
+                              fontSize: 12*ffem,
+                              fontWeight: FontWeight.w500,
+                              height: 1.5*ffem/fem,
+                              color: Color(0xff430463),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                SizedBox(height: Dimensions.size15),
+                SizedBox(height: Dimensions.size10),
                  Positioned(
-                    // line1959a (145:3169)
+                    // line: Divider at bottom
                     left: 30*fem,
                     top: 419.6110839844*fem,
                     child: Align(
@@ -300,7 +357,7 @@ class SoldProductReceiptScreen extends StatelessWidget {
                         width: 303*fem,
                         height: 1*fem,
                         child: Container(
-                          decoration: BoxDecoration (
+                          decoration: const BoxDecoration (
                             color: Color(0xffb8b8b8),
                           ),
                         ),
@@ -326,15 +383,18 @@ class SoldProductReceiptScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Text(
-                        // cartons2me (145:3172)
-                        '234  Cartons',
-                        style: SafeGoogleFont (
-                          'Poppins',
-                          fontSize: 13*ffem,
-                          fontWeight: FontWeight.w500,
-                          height: 1.5*ffem/fem,
-                          color: Color(0xff430463),
+                      Container(
+                        width: Dimensions.size100*1.7,
+                        child: Text(
+                          '${soldProduct.unitAvailable}  Items',
+                          overflow: TextOverflow.ellipsis,
+                          style: SafeGoogleFont (
+                            'Poppins',
+                            fontSize: 13*ffem,
+                            fontWeight: FontWeight.w500,
+                            height: 1.5*ffem/fem,
+                            color: Color(0xff430463),
+                          ),
                         ),
                       ),
                     ],
