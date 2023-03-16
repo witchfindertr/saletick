@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:saletick/app_constants/app_colors.dart';
 import 'package:saletick/app_constants/dimensions2.dart';
 import 'package:saletick/controllers/auth_controller.dart';
+import 'package:saletick/controllers/subscription_controller.dart';
 import 'package:saletick/utilities/utils.dart';
 
 
@@ -13,8 +14,12 @@ class IntroScreen extends GetView<AuthController> {
 
   static const String routeName = '/get-started';
 
+  
+
    @override
   Widget build(BuildContext context) {
+
+    var subController = Get.put(SubscriptionController());
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -59,7 +64,8 @@ class IntroScreen extends GetView<AuthController> {
                   // if user is not logged in, go to login screen
                   if(!controller.isUserLoggedIn()){
                     controller.goToLoginScreen();
-                  }
+                  }                  
+                 
                 },
                 child: Container(
                   margin: EdgeInsets.fromLTRB(50*Dimensions2.fem, 0*Dimensions2.fem, 50*Dimensions2.fem, 0*Dimensions2.fem),

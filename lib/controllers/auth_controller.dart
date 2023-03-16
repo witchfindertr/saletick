@@ -12,6 +12,9 @@ import 'package:saletick/models/transaction_model.dart';
 import 'package:saletick/models/user_model.dart';
 import 'package:saletick/screens/home/inventory_category_list.dart';
 import 'package:saletick/screens/intro/intro_screen.dart';
+import 'package:saletick/screens/subscriptions/subscription_plans_screen.dart';
+import 'package:saletick/screens/subscriptions/tell_your_boss_to_subscribe_screen.dart';
+import 'package:saletick/subscriptions_setup/subscription_status.dart';
 import 'package:saletick/utilities/feedback.dart';
 import 'package:saletick/utilities/firebase_references.dart';
 import 'package:saletick/utilities/logger.dart';
@@ -41,6 +44,13 @@ class AuthController extends GetxController {
   final isLoading = false.obs;
 
 
+  // Subscription Status
+  int notSubscribed = SubscriptionStatus.values.indexOf(SubscriptionStatus.none);
+  int trialPlan = SubscriptionStatus.values.indexOf(SubscriptionStatus.trial);
+  int starterPlan = SubscriptionStatus.values.indexOf(SubscriptionStatus.starter);
+  int premiumPlan = SubscriptionStatus.values.indexOf(SubscriptionStatus.premium);
+
+
   @override
   void onReady() {
     startUpAuth();
@@ -60,8 +70,15 @@ class AuthController extends GetxController {
 
     // Go to homeScreen or WelcomeScreen when app starts
     if(isUserLoggedIn()){
+      // get user details
       await getCurrentUserDetails();
-      goToHomeScreen();
+      // check if user is on free trial
+      if(currentUserData.isDoneWithTrial==false && currentUserData.subscriptionStatus==trialPlan && currentUserData.startedTrialOn!=null){
+        checkIfTrialHasExpired();
+        return;
+      }
+      // checking if user is subscribed or not: then going to Home or subscription screen
+      introCheckIfUserSubscribed();     
     }else{
       Get.offAllNamed(IntroScreen.routeName);
     }
@@ -125,7 +142,8 @@ class AuthController extends GetxController {
       Get.back(); // remove the loading
       UserFeedBack.showSuccess(infoMessage: 'You have now been registered. Welcome !', buttonText: 'Successful');
       await Future.delayed(const Duration(seconds: 2));
-      goToHomeScreen();
+      // checking if user is subscribed or not: then going to Home or subscription screen
+      introCheckIfUserSubscribed(); 
     }on FirebaseAuthException catch(e){
       AppLogger.e(e);
       Get.back();
@@ -149,7 +167,8 @@ class AuthController extends GetxController {
       // show success feedback
       UserFeedBack.showSuccess(infoMessage: 'You have successfully logged In!', buttonText: 'Successful');
       await Future.delayed(const Duration(seconds: 2));
-      goToHomeScreen();
+      // checking if user is subscribed or not: then going to Home or subscription screen
+      introCheckIfUserSubscribed(); 
     }on FirebaseAuthException catch(e){
       AppLogger.e(e);
       Get.back();
@@ -176,7 +195,20 @@ class AuthController extends GetxController {
 
 
   // Function which creates a user in the fireStore DB when registration is done
-  Future<void> saveUserInFireStore({required String email, required String fn, required String ln, required String phone, required String position, required String imageUrl, required String myAdminEmailAddress, required String address, required String qualification, required String salary, required bool isAdmin}) async {
+  Future<void> saveUserInFireStore({
+    required String email, 
+    required String fn, 
+    required String ln, 
+    required String phone, 
+    required String position, 
+    required String imageUrl, 
+    required String myAdminEmailAddress, 
+    required String address, 
+    required String qualification, 
+    required String salary, 
+    required bool isAdmin,
+  }) async {
+
     UserModel userModel = UserModel(
       firstName: fn, 
       surname: ln, 
@@ -190,6 +222,11 @@ class AuthController extends GetxController {
       address: address,
       qualification: qualification,
       salary: salary,
+      subscriptionStatus: notSubscribed,
+      subscriptionCode: "",
+      subscriptionEmailToken: "",
+      isOnFreetrial: false,
+      isDoneWithTrial: false,
       mySales: [],
       myExpenses: [],
     );
@@ -537,6 +574,63 @@ class AuthController extends GetxController {
     String formattedCalculatedAmount = fm.output.withoutFractionDigits;
 
     return formattedCalculatedAmount;
+  }
+
+
+  // checking if user is subscribed or not
+  void introCheckIfUserSubscribed(){
+      if(currentUserData.isAdmin){
+        if(currentUserData.subscriptionStatus == starterPlan || currentUserData.subscriptionStatus == premiumPlan || currentUserData.subscriptionStatus == trialPlan){
+          goToHomeScreen();
+        }else{
+          Get.offAllNamed(SubscriptionPlansScreen.routeName);
+        }
+      }else{
+        if(currentUserData.subscriptionStatus == starterPlan || currentUserData.subscriptionStatus == premiumPlan || currentUserData.subscriptionStatus == trialPlan){
+          goToHomeScreen();
+        }else{
+          Get.offAll(const TellYourBossToSubscribeScreen());
+        }
+      }
+  }
+
+
+
+  // A function to check if user's free or trial plan has expired
+  Future<void> checkIfTrialHasExpired() async {
+    if(currentUserData.startedTrialOn != null || currentUserData.isDoneWithTrial==false){
+      DateTime currentDate = DateTime.now();
+      DateTime dateUserStartedFreePlan = DateTime(2022, 12, 13, 17, 59, 59); // currentUserData.startedTrialOn!;
+      final Duration duration = currentDate.difference(dateUserStartedFreePlan);
+      print("I AM IN: ${duration.inDays}");
+
+      if(duration.inDays > 90){        
+        // Get the current user's info/data and then update it
+        DocumentSnapshot<Map<String, dynamic>> userData = await userFirestoreReference.doc(getCurrentUser()!.email).get();
+    
+        // update the image field which is gotten from fetched user data
+        await userData.reference.update({
+          'subscription_status': notSubscribed,
+          'isOnFreeTrial': false,
+          'isDoneWithTrial': true,
+        });
+        // get user details
+        await getCurrentUserDetails();  
+        Future.delayed(const Duration(seconds: 1));
+        Get.offAllNamed(SubscriptionPlansScreen.routeName);
+        Future.delayed(const Duration(seconds: 1));
+        UserFeedBack.showError("Your Free Trial has ended, kindly subscribe to one of our existing plans");  
+      }else  if(duration.inDays == 80){
+        goToHomeScreen();
+        Future.delayed(const Duration(seconds: 1));
+        UserFeedBack.showError("Please, we wish to remind you that you have only 10 days left as you continue to enjoy your free trial.");
+      }else if(duration.inDays > 0 && duration.inDays <= 89){
+        goToHomeScreen();
+        Future.delayed(const Duration(seconds: 1));
+        UserFeedBack.showError("You are still on free trial and you have ${90 - (duration.inDays)} days left. We wish to remind you!");
+      }  
+
+    }  
   }
 
 

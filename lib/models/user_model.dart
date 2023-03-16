@@ -15,6 +15,12 @@ class UserModel {
   String address;
   String qualification;
   String salary;
+  int subscriptionStatus;
+  String subscriptionCode;
+  String subscriptionEmailToken;
+  bool isOnFreetrial;
+  DateTime? startedTrialOn;
+  bool isDoneWithTrial;
   List<TransactionModel> mySales;
   List<TransactionModel> myExpenses;
 
@@ -30,9 +36,15 @@ class UserModel {
     required this.myAdminEmailAddress,
     required this.address,
     required this.qualification,
-    required this.salary,
+    required this.salary,    
+    required this.subscriptionStatus,
+    required this.subscriptionCode,
+    required this.subscriptionEmailToken,
+    required this.isOnFreetrial,
+    this.startedTrialOn,
+    required this.isDoneWithTrial,
     required this.mySales,
-    required this.myExpenses,
+    required this.myExpenses
   });
 
 
@@ -49,6 +61,12 @@ class UserModel {
     address = snapshot['address'],
     qualification = snapshot['qualification'],
     salary = snapshot['salary'],
+    subscriptionStatus = snapshot['subscription_status'],
+    subscriptionCode = snapshot['subscription_code'],
+    subscriptionEmailToken = snapshot['subscription_email_code'],
+    isOnFreetrial = snapshot['isOnFreeTrial'],
+    startedTrialOn = snapshot['started_trial_on'] == null? null : ( snapshot['started_trial_on']  as Timestamp).toDate(),
+    isDoneWithTrial = snapshot['isDoneWithTrial'],
     mySales = snapshot['my_sales'] == null? [] : (snapshot['my_sales'] as List).map((e) => TransactionModel.fromJson(e as Map<String, dynamic>)).toList(),
     myExpenses = snapshot['my_expenses'] == null? [] : (snapshot['my_expenses'] as List).map((e) => TransactionModel.fromJson(e as Map<String, dynamic>)).toList();
 
@@ -67,6 +85,12 @@ class UserModel {
     address = json['address'],
     qualification = json['qualification'],
     salary = json['salary'],
+    subscriptionStatus = json['subscription_status'],
+    subscriptionCode = json['subscription_code'],
+    subscriptionEmailToken = json['subscription_email_code'],
+    isOnFreetrial = json['isOnFreeTrial'],
+    startedTrialOn =  json['started_trial_on'] == null? null : ( json['started_trial_on']  as Timestamp).toDate(),
+    isDoneWithTrial = json['isDoneWithTrial'],
     mySales = json['my_sales'] == null? [] : (json['my_sales'] as List).map((e) => TransactionModel.fromJson(e as Map<String, dynamic>)).toList(),
     myExpenses = json['my_expenses'] == null? [] : (json['my_expenses'] as List).map((e) => TransactionModel.fromJson(e as Map<String, dynamic>)).toList();
 
@@ -87,6 +111,12 @@ class UserModel {
     data['address'] = this.address;
     data['qualification'] = this.qualification;
     data['salary'] = this.salary;
+    data['subscription_status'] = this.subscriptionStatus;
+    data['subscription_code'] = this.subscriptionCode;
+    data['subscription_email_code'] = this.subscriptionEmailToken;
+    data['isOnFreeTrial'] = this.isOnFreetrial;
+    data['started_trial_on'] = this.startedTrialOn;
+    data['isDoneWithTrial'] = this.isDoneWithTrial;
     data['my_sales'] = this.mySales;
     data['my_expenses'] = this.myExpenses;
 

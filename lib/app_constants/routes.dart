@@ -1,11 +1,14 @@
 import 'package:get/get.dart';
 import 'package:saletick/controllers/chart_controller.dart';
+import 'package:saletick/controllers/subscription_controller.dart';
 import 'package:saletick/screens/auth_screens/register_screen.dart';
 import 'package:saletick/screens/auth_screens/sign_in_screen.dart';
 import 'package:saletick/screens/dashboard/admin_sales_summary.dart';
 import 'package:saletick/screens/home/inventory_category_list.dart';
 import 'package:saletick/screens/intro/intro_screen.dart';
 import 'package:saletick/screens/intro/splash_screen.dart';
+import 'package:saletick/screens/subscriptions/payment_screen.dart';
+import 'package:saletick/screens/subscriptions/subscription_plans_screen.dart';
 
 
 class Routes {
@@ -21,7 +24,7 @@ class Routes {
       name: IntroScreen.routeName,
       page: () => const IntroScreen(),
       transition: Transition.fade,   
-      transitionDuration: const Duration(seconds: 3),   
+      transitionDuration: const Duration(seconds: 4),   
     ),
     // Home screen
     GetPage(
@@ -49,6 +52,13 @@ class Routes {
       page: () => const AdminSalesSummaryScreen(),
       transition: Transition.fade,  
       binding: BindingsBuilder.put(() => ChartController())
+    ),
+    // Subscription Screen
+    GetPage(
+      name: SubscriptionPlansScreen.routeName,
+      page: () => SubscriptionPlansScreen(),
+      transition: Transition.fade,  
+      binding: BindingsBuilder.put(() => SubscriptionController())
     ),
   ];
 }

@@ -45,13 +45,10 @@ dependencies:
   percent_indicator: ^4.2.2
   uuid: ^3.0.7
   barcode_widget: ^2.0.3
-  
-
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  shared_preferences: ^2.0.18
+  webview_flutter: ^4.0.6
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_test:
@@ -63,7 +60,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/ellipse-17.png"
+  image_path: "assets/images/saletick_logo.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

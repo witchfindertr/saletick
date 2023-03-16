@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:saletick/app_constants/routes.dart';
 import 'package:saletick/bindings/custom_bindings.dart';
 import 'package:saletick/firebase_options.dart';
+import 'package:saletick/screens/intro/intro_screen.dart';
+import 'package:saletick/screens/subscriptions/subscription_plans_screen.dart';
 
 
 
@@ -39,8 +41,8 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Georgia',
       ),
       // home: Scaffold(body: SingleChildScrollView(child: AdminSalesSummaryPopupWidget())),
-      // home: TestScreen(),
-      // home: InventoryListScreen(),
+      // home: SubscriptionPlansScreen(),
+      // home: IntroScreen(),
     );
   }
 }
